@@ -4,7 +4,7 @@
 #include "base_type.h"
 #include <time.h>
 
-TypeHintCostB optimize(OptimizeTask task);
+TypeHintCostB optimize(OptimizeTask task,bool debug=false);
 int main(){
  FILE* file=fopen("optimizeTask.dat","rb");
  OptimizeTask task;
@@ -16,6 +16,7 @@ int main(){
  printf("memberSize: %d\n",task.memberSize);
  TypeHintCostB f;
  size_t time=clock();
+ f=optimize(task,true);
  for(int t=0;t<1000;t++){
   f=optimize(task);
  }
@@ -28,7 +29,7 @@ int main(){
  }
  printf("\n");
 }
-TypeHintCostB optimize(OptimizeTask task){
+TypeHintCostB optimize(OptimizeTask task,bool debug){
  //used as final return
  TypeHintCostB f;
  //index of type with minCost for given member
@@ -78,11 +79,16 @@ TypeHintCostB optimize(OptimizeTask task){
  
 
  int level=0;
+ int count[7];
+ for(int t=0;t<7;t++){
+  count[t]=0;
+ }
  while(level>-1){
   //TODO don't check when just decreased level?
  
   //finished?
   if(bundleRemain[level]==0){
+   count[1]++;
    //new best?
    if(bundleCost[level] < f.cost){
     //copy to f
@@ -107,22 +113,26 @@ TypeHintCostB optimize(OptimizeTask task){
   }
   //stop when cost too large
   if(bundleCost[level] + bundleMinCost[level] > f.cost){
+   count[2]++;
    --level;
    continue;
   }
   //stop when bundle total length too small
   if(level>0 && (bundleLength[level-1] - bundleLength[level] <task.minLength)){
+   count[3]++;
    --level;
    continue;
   }
   //too many bundle
   if(level>=MAX_BUNDLE){
+   count[4]++;
    --level;
    continue;
   }
 
   //tested all types
   if(bundle[level+1]==task.typeSize-1){
+   count[5]++;
    --level;
    continue;
   }
@@ -131,9 +141,11 @@ TypeHintCostB optimize(OptimizeTask task){
   ++bundle[level];
   TestMask valid=bundleRemain[level-1]&task.typeTestMask[bundle[level]];
   if(valid==0){
+   count[6]++;
     --level;
     continue;
   }
+  count[0]++;
   bundleLength[level]=bundleLength[level-1];
   bundleCost[level]=bundleCost[level-1]+task.bundleCost;
   bundleMinCost[level]=bundleMinCost[level-1];
@@ -148,6 +160,11 @@ TypeHintCostB optimize(OptimizeTask task){
    bundleCost[level] +=task.cost[bundle[level]]*task.length[t];
    bundleMinCost[level]-=task.cost[memberMinIndex[t]]*task.length[t];
    valid^=1L<<t;
+  }
+ }
+ if(debug){
+  for(int t=0;t<7;t++){
+   printf("counter %d:%d\n",t,count[t]);
   }
  }
  return f;
