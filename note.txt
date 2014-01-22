@@ -1,0 +1,81 @@
+improvements:
+ manage:
+  specification (version):
+   update software when new version available
+  condition:
+   traditional condition with deck_type and truck_type
+  skeleton:
+   condition
+   joint_n,member_n,member_links
+   can force to change condition
+  joint_position
+  type_hint
+tricks:
+
+30 joints* 2 coordinate* log(4*4)
+
+state of positionHint:
+ null
+ never solved, with typeHintCost inherited.
+ solved, bad (divide by zero, possiblly outside of legal section)
+ solved, better than before
+ solved, worse than before
+ solved, same as before
+ solving:
+  analyzing,
+  wait to be optimized,
+  optimizing,
+solve module: (deprecated)
+ request_table:
+  description,bridgeInfo_hash
+  positionHintB[],typeHintCostB[]
+ request_task:
+  bridgeInfo_hash, size, compress?
+  positionHintB[size], typeHintCostB[size]
+ request_info:
+  bridgeInfo_hash
+  bridgeInfo
+ request_bridge:
+  description
+  bridgeInfo
+ upload_result:
+  bridgeInfo_hash,compressed?,positionHintB[], typeHintCostB1_hash[], typeHintCostB2[]
+  success!
+pipe based design:
+ modules:
+  database one
+  optimizeDistributer one
+  analyzer multiple
+  optimizer multiple
+ from database to analyzer:
+   (bridgeInfo_hash,size,positionHintB[size],typeHintCostB[size])
+   (bridgeInfo)
+ from analyzer to database:
+   (feed_guide)
+   (bridgeInfo_hash,size,positionHintB[size],)
+  
+  from analyzer to optimizer:
+   
+
+  from analyzer
+
+
+D: database
+M: optimize manager
+A: analyze_unit
+O: optimize_unit
+
+ ---(1,m)-- A --(n,1)--- 
+D                       M
+ ---(1,l)-- O --(k,1)--- 
+
+
+
+ 
+ 
+sizes:
+ positionHintB: 30
+ typeHintCostB: 8+64+8=80
+ OptimizeTask1: 256*8+64*8+256*8+256+4+8+8+4+8=4896
+ OptimizeTask2: 256*8+64*8+8=2568
+ BridgeInfo: ~64*8+50*8+(256*8*10)
