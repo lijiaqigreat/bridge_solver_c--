@@ -1,3 +1,9 @@
+*.out
+*.png
+*.jpg
+*.gif
+*.html
+*.properties
 # Compiled Object files
 *.slo
 *.lo
