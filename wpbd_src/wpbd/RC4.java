@@ -1,4 +1,5 @@
 /*  1:   */ package wpbd;
+import java.io.*;
 /*  2:   */ 
 /*  3:   */ public class RC4
 /*  4:   */ {
@@ -17,8 +18,8 @@
 /* 17:   */   public void setKey(byte[] key)
 /* 18:   */   {
 /* 19:43 */     int len = Math.min(256, key.length);
-/* 20:   */     int y;
-/* 21:44 */     for (int x = y = 0; x < 256; x++)
+/* 20:   */     int x,y;
+/* 21:44 */     for (x = y = 0; x < 256; x++)
 /* 22:   */     {
 /* 23:45 */       y = y + this.buf[x] + key[(x % len)] & 0xFF;
 /* 24:46 */       int tmp = this.buf[x];
@@ -51,6 +52,15 @@
 /* 51:80 */     this.xState = x;
 /* 52:81 */     this.yState = y;
 /* 53:   */   }
+public static void main(String[] args) throws Exception{
+  RandomAccessFile f=new RandomAccessFile("../Eg/2014/MyDesign.bdc","r");
+  byte[] b=new byte[(int)f.length()];
+  f.read(b);
+  RC4 rc4=new RC4();
+  rc4.setKey("QuenchHollow");
+  rc4.endecrypt(b);
+  System.out.println(new String(b));
+}
 /* 54:   */ }
 
 

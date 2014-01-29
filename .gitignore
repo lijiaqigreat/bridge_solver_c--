@@ -4,6 +4,7 @@
 *.gif
 *.html
 *.properties
+*.class
 # Compiled Object files
 *.slo
 *.lo
