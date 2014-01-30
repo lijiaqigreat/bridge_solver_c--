@@ -3,6 +3,10 @@
 
 #include "base_type.h"
 
+/**
+ * to be converted from .bdc
+ * IMPORTANT should be fixed once loaded
+ */
 struct BridgeInfo{
  //Condition
  

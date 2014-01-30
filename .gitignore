@@ -9,6 +9,8 @@
 *.slo
 *.lo
 *.o
+.*.swp
+.*.*.swp
 
 # Compiled Dynamic libraries
 *.so
