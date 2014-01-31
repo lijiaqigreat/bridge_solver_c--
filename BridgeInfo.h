@@ -8,6 +8,8 @@
  * IMPORTANT should be fixed once loaded
  */
 struct BridgeInfo{
+ const char* buf;
+ 
  //Condition
  
  /**

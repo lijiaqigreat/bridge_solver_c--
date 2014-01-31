@@ -173,6 +173,9 @@ struct MemberLink{
  * TODO more comment
  */
 struct Type{
+ Int materialIndex;
+ Int shapeIndex;
+ Int sizeIndex;
  Double E;
  Double Fy;
  Double Density;
