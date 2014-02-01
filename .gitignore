@@ -5,6 +5,7 @@
 *.html
 *.properties
 *.class
+wpbd_src/
 # Compiled Object files
 *.slo
 *.lo
