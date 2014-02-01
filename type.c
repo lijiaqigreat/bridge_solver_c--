@@ -1,29 +1,41 @@
 #include "type.h"
 #include <string.h>
+#include <stdlib.h>
 #include <math.h>
+
+int compareTypeCost (const void *a, const void *b){
+    const Double *da = &((const TypeB*) a)->cost;
+    const Double *db = &((const TypeB*) b)->cost;
+                                
+    return (*da > *db) - (*da < *db);
+}
+
 int setupTypes(TypeB* types,const char* buf){
-  for(int t=0;t<MAX_TYPE;t++){
-    int i1,i2,i3;
-    Double E,Fy,Density,Area,Moment,CostVol;
-    char name[6];
-    int n=sscanf(buf,"%d %d %d %5s %lf %lf %lf %lf %lf %lf\n",&i1,&i2,&i3,name,&E,&Fy,&Density,&Area,&Moment,&CostVol);
-    while(*(buf++)!='\n'){}
-    if(n!=10){
-      return 1;
+    for(int t=0;t<MAX_TYPE;t++){
+        int i1,i2,i3;
+        Double E,Fy,Density,Area,Moment,CostVol;
+        char name[6];
+        int n=sscanf(buf,"%d %d %d %5s %lf %lf %lf %lf %lf %lf\n",&i1,&i2,&i3,name,&E,&Fy,&Density,&Area,&Moment,&CostVol);
+        while(*(buf++)!='\n'){}
+        if(n!=10){
+            return 1;
+        }
+        types[t].index=(Byte)(MATERIAL_SHIFT*i1+SHAPE_SHIFT*i2+SIZE_SHIFT*i3);
+        strcpy(types[t].name,name);
+        types[t].weight=DEAD_LOAD_FACTOR*Density*Area*GRAVITY/2000;
+        types[t].AE=Area*E;
+        types[t].cost=CostVol*Area*Density*Area*GRAVITY*2;
+        types[t].tensionStrength=TENSION_RESISTANCE_FACTOR*Fy*Area;
+        types[t].inverseRadiusOfGyration=sqrt(Area/Moment);
+        types[t].FyArea_d_CEMoment=Fy*Area/(PI2*E*Moment);
+        types[t].FyArea=Fy*Area;
     }
-    types[t].materialIndex=(Byte)i1;
-    types[t].shapeIndex=(Byte)i2;
-    types[t].sizeIndex=(Byte)i3;
-    strcpy(types[t].name,name);
-    types[t].weight=DEAD_LOAD_FACTOR*Density*Area*GRAVITY/2000;
-    types[t].AE=Area*E;
-    types[t].cost=CostVol*Area*Density*Area*GRAVITY*2;
-    types[t].tensionStrength=TENSION_RESISTANCE_FACTOR*Fy*Area;
-    types[t].inverseRadiusOfGyration=sqrt(Area/Moment);
-    types[t].FyArea_d_CEMoment=Fy*Area/(PI2*E*Moment);
-    types[t].FyArea=Fy*Area;
-  }
-  return 0;
+    qsort(types,MAX_TYPE,sizeof(TypeB),compareTypeCost);
+    for(int t=0;t<MAX_TYPE;++t){
+        types[t].index2=t;
+    }
+    
+    return 0;
 }
 
 bool ifPassType(const TypeB* type,Double compression,Double tension,Double length,Double slenderness){

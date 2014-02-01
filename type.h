@@ -1,14 +1,16 @@
 #ifndef TYPE_H
 #define TYPE_H
 #include "base_type.h"
+#define MATERIAL_SHIFT 1
+#define SHAPE_SHIFT 99
+#define SIZE_SHIFT 3
 
 /**
  * TODO more comment
  */
 struct TypeB{
- Byte materialIndex;
- Byte shapeIndex;
- Byte sizeIndex;
+ Byte index;
+ Byte index2;
 
  char name[6];
 

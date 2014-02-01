@@ -43,8 +43,6 @@ const BridgeInfo* loadBridge(const char* path){
     /* encrypt buffer */
     char* buf=(char*) readFile(path);
     printf("decrypted test:\n%s\n",buf);
-    int t;
-    int tt;
     int year;
     int jointSize;
     int memberSize;
@@ -57,7 +55,7 @@ const BridgeInfo* loadBridge(const char* path){
         sscanf(mss,"%d",&memberSize);
     }
     buf+=19;
-    for(t=0;t<10;t++){
+    for(int t=0;t<10;t++){
         code[9-t]=conditionID%10;
         conditionID/=10;
     }
@@ -135,7 +133,7 @@ const BridgeInfo* loadBridge(const char* path){
     f->slenderness=(leftCable||rightCable)?1e100:300;
     {
         bool restraint[MAX_FIXED_JOINT*2];
-        for(t=0;t<MAX_FIXED_JOINT*2;t++){
+        for(int t=0;t<MAX_FIXED_JOINT*2;t++){
             restraint[t]=false;
         }
         restraint[0]=true;
@@ -165,35 +163,35 @@ const BridgeInfo* loadBridge(const char* path){
             restraint[rightAnchorageJointIndex*2]=true;
             restraint[rightAnchorageJointIndex*2+1]=true;
         }
-        tt=0;
-        for(t=0;t<MAX_FIXED_JOINT*2;t++){
+        int tt=0;
+        for(int t=0;t<MAX_FIXED_JOINT*2;t++){
             if(restraint[t]){
                 f->fixedIndex[tt++]=t;
             }
         }
         f->fixedIndex[tt]=-1;
     }
-    for(t=0;t<jointSize;t++){
+    for(int t=0;t<jointSize;t++){
         Int x,y;
         char xs[4],ys[4];
-        sscanf(buf,"%3[\- 0-9]%3[\- 0-9]",xs,ys);
+        sscanf(buf,"%3[- 0-9]%3[- 0-9]",xs,ys);
         sscanf(xs,"%d",&x);
         sscanf(ys,"%d",&y);
         buf+=6;
         f->positionHint.xy[t*2]=x;
         f->positionHint.xy[t*2+1]=y;
     }
+    int bundleSize=0;
     {
         int index;
         int ttt;
-        tt=0;
         //valid conversion?
         Byte* memberi=&f->typeHint.member[0];
         Byte *bundle=&f->typeHint.bundle[0];
-        for(t=0;t<MAX_BUNDLE;t++){
+        for(int t=0;t<MAX_BUNDLE;t++){
             bundle[t]=-1;
         }
-        for(t=0;t<memberSize;t++){
+        for(int t=0;t<memberSize;t++){
             char j1s[3],j2s[3],i3s[3];
             Int j1,j2;
             int i1,i2,i3;
@@ -204,22 +202,29 @@ const BridgeInfo* loadBridge(const char* path){
             buf+=8;
             f->memberLinks[t].j1=j1-1;
             f->memberLinks[t].j2=j2-1;
-            index=i2*99+i3*3+i1;
-            for(ttt=0;ttt<tt&&bundle[ttt]!=index;ttt++){}
-            if(ttt==tt){
-                if(tt==MAX_BUNDLE){
+            index=MATERIAL_SHIFT*i1+SHAPE_SHIFT*i2+SIZE_SHIFT*i3;
+            for(ttt=0;ttt<bundleSize&&bundle[ttt]!=index;ttt++){}
+            if(ttt==bundleSize){
+                if(bundleSize==MAX_BUNDLE){
                     //exceed max bundle
                     printf("!!!\n");
                     return 0;
                 }
-                bundle[tt]=(Byte)index;
-                printf("test: %d %d %s\n",tt,index,f->types[index].name);
-                tt++;
+                
+                bundle[bundleSize]=(Byte)index;
+                printf("test: %d %d %s\n",bundleSize,index,f->types[index].name);
+                bundleSize++;
             }
             memberi[t]=ttt;
         }
-        for(t=0;t<tt;t++){
+        for(int t=0;t<bundleSize;t++){
             //TODO update f->typeHint.bundle
+            for(int tt=0;tt<MAX_TYPE;++tt){
+                if(f->types[tt].index==bundle[t]){
+                    bundle[t]=tt;
+                    break;
+                }
+            }
         }
     }
     f->baseCost=0;
