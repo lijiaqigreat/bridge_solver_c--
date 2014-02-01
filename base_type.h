@@ -20,6 +20,7 @@
 
 #define GRAVITY 9.8066
 #define DEAD_LOAD_FACTOR 1.25
+#define LIVE_LOAD_FACTOR 2.3275
 #define PI2 9.8696044
 #define COMPRESSION_RESISTANCE_FACTOR 0.9
 #define TENSION_RESISTANCE_FACTOR 0.95
@@ -50,7 +51,7 @@ typedef int Int;
 /**
  * nth bit is 1 if member n pass the type
  */
-typedef unsigned long long TestMask;
+typedef __uint128_t TestMask;
 
 /**
  * each byte is divided into 2 parts, each 4 bit is

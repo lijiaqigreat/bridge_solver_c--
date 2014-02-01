@@ -11,7 +11,7 @@ struct Result{
  /**
   * main matrix to be calculated
   */
- Double matrix[MAX_EQUATION];
+ Double matrix[MAX_EQUATION*MAX_EQUATION];
  /**
   * length of each memeber
   */
@@ -37,5 +37,6 @@ struct Result{
  Dollar totalCost;
  Status status;
 };
+char* print(const Result* result);
 
 #endif

@@ -20,7 +20,7 @@ int setupTypes(TypeB* types,const char* buf){
     types[t].cost=CostVol*Area*Density*Area*GRAVITY*2;
     types[t].tensionStrength=TENSION_RESISTANCE_FACTOR*Fy*Area;
     types[t].inverseRadiusOfGyration=sqrt(Area/Moment);
-    types[t].FyArea_d_CEMoment=Fy*Area*(PI2*E*Moment);
+    types[t].FyArea_d_CEMoment=Fy*Area/(PI2*E*Moment);
     types[t].FyArea=Fy*Area;
   }
   return 0;
