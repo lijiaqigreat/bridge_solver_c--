@@ -1,4 +1,4 @@
 
 #include "base_type.h"
 
-TypeHintCostB optimize(OptimizeTask task,bool debug=false);
+int optimize(TypeHintCostB* f,const OptimizeTask* task,bool debug=false);

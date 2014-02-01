@@ -3,7 +3,7 @@
 #define CUBE(a) ((a)*(a)*(a))
 #define MATRIX(a,b) matrix[MAX_EQUATION*(a)+(b)]
 
-int analyze(Result* result,const BridgeInfo *bridgeInfo, const PositionHintB *position, const TypeHintCostB *thc){
+int analyze(Result* result,OptimizeTask* task,const BridgeInfo *bridgeInfo, const PositionHintB *position, const TypeHintCostB *thc){
     //update XY
     Double* XY=(Double*)result->XY;
     Double* matrix=(Double*)result->matrix;
@@ -169,21 +169,32 @@ int analyze(Result* result,const BridgeInfo *bridgeInfo, const PositionHintB *po
         result->minForce[t1] = _min;
     }
     
-    /*
     //set optimizeTask
-    TestMask typeTestMask[MAX_TYPE];
+    int typeIndex=0;
     for(int t1=0;t1<MAX_TYPE;++t1){
-        Type* type=&bridgeInfo->types[t1];
+        const TypeB* type=&bridgeInfo->types[t1];
         TestMask tmp=0;
         for(int t2=0;t2<bridgeInfo->memberSize;++t2){
-            if(ifPassType(type,result->minForce[t2],result->maxForce[t2],result->memberLength[t2],bridgeInfo->slenderness)){
+            if(ifPassType(type,-result->minForce[t2],result->maxForce[t2],result->memberLength[t2],bridgeInfo->slenderness)){
                 tmp|=((TestMask)1)<<t2;
             }
         }
-        typeTestMask[t1]=tmp;
+        int t2;
+        for(t2=0;t2<typeIndex&&(task->typeTestMask[t2]&tmp)!=tmp;++t2){}
+        if(t2==typeIndex){
+            task->typeTestMask[typeIndex]=tmp;
+            task->index[typeIndex]=t1;
+            task->cost[typeIndex]=type->cost;
+            typeIndex++;
+        }
     }
-    optimizeTask.typeSize=0;
-    */
+    for(int t1=0;t1<bridgeInfo->memberSize;t1++){
+        task->length[t1]=result->memberLength[t1];
+    }
+    task->typeSize=typeIndex;
+    task->memberSize=bridgeInfo->memberSize;
+    task->capCost=1000000.;
+    task->minLength=0.;
     return 0;
     
 }

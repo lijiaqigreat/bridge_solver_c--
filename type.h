@@ -31,7 +31,7 @@ struct TypeB{
 };
 
 int setupTypes(TypeB* types,const char* buf);
-bool ifPassType(TypeB* type,Double compression,Double tension,Double length,Double slenderness);
+bool ifPassType(const TypeB* type,Double compression,Double tension,Double length,Double slenderness);
 Double getCompressionStrength(const TypeB* type,Double length);
 
 

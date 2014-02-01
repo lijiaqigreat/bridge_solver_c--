@@ -10,7 +10,7 @@
  *        compute optimizeTask.
  * WARNING: cannot run parallelly
  */
-int analyze(Result* result,const BridgeInfo *bridge, const PositionHintB *position, const TypeHintCostB *thc);
+int analyze(Result* result,OptimizeTask *task,const BridgeInfo *bridge, const PositionHintB *position, const TypeHintCostB *thc);
 
 
 #endif
