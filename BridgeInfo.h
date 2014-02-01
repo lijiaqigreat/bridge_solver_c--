@@ -2,6 +2,7 @@
 #define BRIDGEINFO_H
 
 #include "base_type.h"
+#include "type.h"
 
 /**
  * to be converted from .bdc
@@ -52,7 +53,7 @@ struct BridgeInfo{
   * all avaliable types for this optimization
   * TODO pointer or array?
   */
- Type types[MAX_TYPE];
+ TypeB types[MAX_TYPE];
  /**
   * additional cost per bundle used
   */

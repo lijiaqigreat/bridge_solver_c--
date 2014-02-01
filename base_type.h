@@ -4,16 +4,31 @@
 #define FFSLL __builtin_ffsll
 #define MAX_DECK_TYPE 4
 #define MAX_TRUCK_TYPE 4
-#define MAX_TYPE 256
 #define MAX_BUNDLE 8
-#define MAX_MEMBER 64
+#define MAX_MEMBER 120
 #define MAX_FREE_JOINT 30
 #define MAX_FIXED_JOINT 20
-#define MAX_JOINT (MAX_FREE_JOINT+MAX_FIXED_JOINT)
+#define MAX_JOINT 50
 #define MAX_EQUATION (MAX_JOINT*2)
 #define SQR(a) ((a)*(a))
-//TODO double check max_load
 #define MAX_LOAD 12
+
+#define SIZE_SIZE 33
+#define MATERIAL_SIZE 3
+#define SHAPE_SIZE 2
+#define MAX_TYPE 196
+
+#define GRAVITY 9.8066
+#define DEAD_LOAD_FACTOR 1.25
+#define PI2 9.8696044
+#define COMPRESSION_RESISTANCE_FACTOR 0.9
+#define TENSION_RESISTANCE_FACTOR 0.95
+#define BUNDLE_COST 1000.
+#define JOINT_COST 500.
+#define DEADLOADFACTOR 1.25
+#define LIVELOADFACTOR 2.3275
+
+//TODO double check max_load
 #include <stdio.h>
 
 /**
@@ -168,32 +183,6 @@ struct OptimizeTask2{
  */
 struct MemberLink{
  Int j1,j2;
-};
-/**
- * TODO more comment
- */
-struct Type{
- Int materialIndex;
- Int shapeIndex;
- Int sizeIndex;
- Double E;
- Double Fy;
- Double Density;
- Double Area;
- Double Moment;
- Double CostVol;
-
- Double weight;
- Double AE;
- Double cost;
- Double tensionStrength;
- Double inverseRadiusOfGyration;
- Double FyArea_d_CEMoment;
- Double FyArea;
- Double compressionResistanceFactor;
- 
- Double getCompressionStrength(Double length);
- bool ifPass(Double compression,Double tension,Double length,Double slenderness);
 };
 /**
  * TODO need perfection
