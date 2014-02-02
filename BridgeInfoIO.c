@@ -1,7 +1,8 @@
 
 #include "BridgeInfoIO.h"
+#include "rc4.h"
 
-unsigned char* readFile(const char* path,bool encrypt=true){
+unsigned char* readFile(const char* path,Bool encrypt){
     FILE *fp;
     size_t n;
 
@@ -41,7 +42,7 @@ int writeFile(const char* path, unsigned char* buf){
 
 const BridgeInfo* loadBridge(const char* path){
     /* encrypt buffer */
-    char* buf=(char*) readFile(path);
+    char* buf=(char*) readFile(path,TRUE);
     printf("decrypted test:\n%s\n",buf);
     int year;
     int jointSize;
@@ -55,23 +56,24 @@ const BridgeInfo* loadBridge(const char* path){
         sscanf(mss,"%d",&memberSize);
     }
     buf+=19;
-    for(int t=0;t<10;t++){
+    int t;
+    for(t=0;t<10;t++){
         code[9-t]=conditionID%10;
         conditionID/=10;
     }
     BridgeInfo* f=(BridgeInfo*) malloc(sizeof(BridgeInfo));
-    char* buf2=(char*) readFile(TYPE_PATH,false);
+    char* buf2=(char*) readFile(TYPE_PATH,FALSE);
     setupTypes((TypeB*)(&f->types[0]),buf2);
     f->buf=buf;
     f->totalJointSize=jointSize;
     f->memberSize=memberSize;
-    bool hiPier=code[9]>0;
+    Bool hiPier=code[9]>0;
     int pierPanelIndex=code[8]-1;
     int pierJointIndex=code[8]-1;
-    bool pier=pierPanelIndex>=0;
-    bool arch=code[7]==1;
-    bool leftCable=code[7]==2||code[7]==3;
-    bool rightCable=code[7]==3;
+    Bool pier=pierPanelIndex>=0;
+    Bool arch=code[7]==1;
+    Bool leftCable=code[7]==2||code[7]==3;
+    Bool rightCable=code[7]==3;
     int underClearance=10*code[5]+code[6];
     int overClearance=10*code[3]+code[4];
     int nPanels=10*code[1]+code[2];
@@ -132,46 +134,46 @@ const BridgeInfo* loadBridge(const char* path){
 
     f->slenderness=(leftCable||rightCable)?1e100:300;
     {
-        bool restraint[MAX_FIXED_JOINT*2];
-        for(int t=0;t<MAX_FIXED_JOINT*2;t++){
-            restraint[t]=false;
+        Bool restraint[MAX_FIXED_JOINT*2];
+        for(t=0;t<MAX_FIXED_JOINT*2;t++){
+            restraint[t]=FALSE;
         }
-        restraint[0]=true;
-        restraint[1]=true;
-        restraint[nLoadedJoints*2-1]=true;
+        restraint[0]=TRUE;
+        restraint[1]=TRUE;
+        restraint[nLoadedJoints*2-1]=TRUE;
         if(pier){
-            restraint[pierJointIndex*2]=true;
-            restraint[pierJointIndex*2+1]=true;
+            restraint[pierJointIndex*2]=TRUE;
+            restraint[pierJointIndex*2+1]=TRUE;
             if(hiPier){
-                restraint[0]=false;
+                restraint[0]=FALSE;
             }
         }
         if(arch){
-            restraint[nLoadedJoints*2-1]=false;
-            restraint[0]=false;
-            restraint[1]=false;
-            restraint[archJointIndex*2+0]=true;
-            restraint[archJointIndex*2+1]=true;
-            restraint[archJointIndex*2+2]=true;
-            restraint[archJointIndex*2+3]=true;
+            restraint[nLoadedJoints*2-1]=FALSE;
+            restraint[0]=FALSE;
+            restraint[1]=FALSE;
+            restraint[archJointIndex*2+0]=TRUE;
+            restraint[archJointIndex*2+1]=TRUE;
+            restraint[archJointIndex*2+2]=TRUE;
+            restraint[archJointIndex*2+3]=TRUE;
         }
         if(leftCable){
-            restraint[leftAnchorageJointIndex*2]=true;
-            restraint[leftAnchorageJointIndex*2+1]=true;
+            restraint[leftAnchorageJointIndex*2]=TRUE;
+            restraint[leftAnchorageJointIndex*2+1]=TRUE;
         }
         if(rightCable){
-            restraint[rightAnchorageJointIndex*2]=true;
-            restraint[rightAnchorageJointIndex*2+1]=true;
+            restraint[rightAnchorageJointIndex*2]=TRUE;
+            restraint[rightAnchorageJointIndex*2+1]=TRUE;
         }
         int tt=0;
-        for(int t=0;t<MAX_FIXED_JOINT*2;t++){
+        for(t=0;t<MAX_FIXED_JOINT*2;t++){
             if(restraint[t]){
                 f->fixedIndex[tt++]=t;
             }
         }
         f->fixedIndex[tt]=-1;
     }
-    for(int t=0;t<jointSize;t++){
+    for(t=0;t<jointSize;t++){
         Int x,y;
         char xs[4],ys[4];
         sscanf(buf,"%3[- 0-9]%3[- 0-9]",xs,ys);
@@ -188,10 +190,10 @@ const BridgeInfo* loadBridge(const char* path){
         //valid conversion?
         Byte* memberi=&f->typeHint.member[0];
         Byte *bundle=&f->typeHint.bundle[0];
-        for(int t=0;t<MAX_BUNDLE;t++){
+        for(t=0;t<MAX_BUNDLE;t++){
             bundle[t]=-1;
         }
-        for(int t=0;t<memberSize;t++){
+        for(t=0;t<memberSize;t++){
             char j1s[3],j2s[3],i3s[3];
             Int j1,j2;
             int i1,i2,i3;
@@ -217,9 +219,10 @@ const BridgeInfo* loadBridge(const char* path){
             }
             memberi[t]=ttt;
         }
-        for(int t=0;t<bundleSize;t++){
+        for(t=0;t<bundleSize;t++){
             //TODO update f->typeHint.bundle
-            for(int tt=0;tt<MAX_TYPE;++tt){
+            int tt;
+            for(tt=0;tt<MAX_TYPE;++tt){
                 if(f->types[tt].index==bundle[t]){
                     bundle[t]=tt;
                     break;

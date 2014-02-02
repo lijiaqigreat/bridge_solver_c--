@@ -3,6 +3,7 @@
 
 #include "BridgeInfo.h"
 #include "Result.h"
+#include "type.h"
 
 /**
  * Analyzer represent a work unit that can solve bridges.

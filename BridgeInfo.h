@@ -8,7 +8,7 @@
  * to be converted from .bdc
  * IMPORTANT should be fixed once loaded
  */
-struct BridgeInfo{
+typedef struct {
  const char* buf;
  
  //Condition
@@ -88,6 +88,6 @@ struct BridgeInfo{
  PositionHint positionHint;
  TypeHintCostB typeHint;
  
-};
+} BridgeInfo;
 
 #endif

@@ -1,7 +1,7 @@
 #include "type.h"
+#include <math.h>
 #include <string.h>
 #include <stdlib.h>
-#include <math.h>
 
 int compareTypeCost (const void *a, const void *b){
     const Double *da = &((const TypeB*) a)->cost;
@@ -11,7 +11,8 @@ int compareTypeCost (const void *a, const void *b){
 }
 
 int setupTypes(TypeB* types,const char* buf){
-    for(int t=0;t<MAX_TYPE;t++){
+    int t;
+    for(t=0;t<MAX_TYPE;t++){
         int i1,i2,i3;
         Double E,Fy,Density,Area,Moment,CostVol;
         char name[6];
@@ -31,14 +32,14 @@ int setupTypes(TypeB* types,const char* buf){
         types[t].FyArea=Fy*Area;
     }
     qsort(types,MAX_TYPE,sizeof(TypeB),compareTypeCost);
-    for(int t=0;t<MAX_TYPE;++t){
+    for(t=0;t<MAX_TYPE;++t){
         types[t].index2=t;
     }
     
     return 0;
 }
 
-bool ifPassType(const TypeB* type,Double compression,Double tension,Double length,Double slenderness){
+Bool ifPassType(const TypeB* type,Double compression,Double tension,Double length,Double slenderness){
   return (tension <= type->tensionStrength)&&
          (slenderness>length*type->inverseRadiusOfGyration)&&
          (compression <= getCompressionStrength(type,length));

@@ -8,7 +8,7 @@
 /**
  * TODO more comment
  */
-struct TypeB{
+typedef struct {
  Byte index;
  Byte index2;
 
@@ -28,10 +28,10 @@ struct TypeB{
  Double FyArea_d_CEMoment;
 //
  Double FyArea;
-};
+} TypeB;
 
 int setupTypes(TypeB* types,const char* buf);
-bool ifPassType(const TypeB* type,Double compression,Double tension,Double length,Double slenderness);
+Bool ifPassType(const TypeB* type,Double compression,Double tension,Double length,Double slenderness);
 Double getCompressionStrength(const TypeB* type,Double length);
 
 

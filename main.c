@@ -5,15 +5,11 @@
 #include "optimizer.h"
 #include <time.h>
 #include <stdlib.h>
+#include <math.h>
 typedef __uint128_t BigInt;
 int test1();
 int test2();
 int main(){
-    BigInt a=1;
-    BigInt b=1;
-    a|=((BigInt)1)<<10;
-    b|=((BigInt)1)<<14;
-    printf("%llx|%llx",(unsigned long long)a,(unsigned long long)(b^a));
     test2();
 }
 
@@ -44,7 +40,7 @@ int test1(){
 }
 */
 int test2(){
-    const BridgeInfo* f=loadBridge("Eg/2014/test1.bdc");
+    const BridgeInfo* f=loadBridge("Eg/2014/test2.bdc");
     Result* result=(Result*)malloc(sizeof(Result));
     PositionHintB position;
     
@@ -55,12 +51,13 @@ int test2(){
 
     int n=analyze(result,&task,f,&position,&f->typeHint);
     printf("return: %d\n",n);
-    n=optimize(&thc, &task,true);
+    n=optimize(&thc, &task,TRUE);
     
-    for(int t=0;t<33;t++){
+    int t;
+    for(t=0;t<33;t++){
         //printf("joint %3d:%4d|%4d\n",t,f->positionHint.xy[t*2],f->positionHint.xy[t*2+1]);
     }
-    for(int t=0;t<62;t++){
+    for(t=0;t<62;t++){
         const TypeB* type=&f->types[f->typeHint.bundle[f->typeHint.member[t]]];
         const TypeB* type2=&f->types[thc.bundle[thc.member[t]]];
         Double max=result->maxForce[t];
@@ -69,7 +66,7 @@ int test2(){
         Double min2=getCompressionStrength(type,result->memberLength[t]);
         printf("member %3d:%2d|%2d|%10.2lf|%10.2lf|%10.2lf|%10.2lf|%2.2lf|%2.2lf|%2.3lf|%s|%s\n",t,f->memberLinks[t].j1,f->memberLinks[t].j2,max,min,max2,min2,max/max2,min/min2,result->memberLength[t],type->name,type2->name);
     }
-    for(int t=0;t<10;t++){
+    for(t=0;t<10;t++){
         printf("fixed: %d\n",f->fixedIndex[t]);
     }
 

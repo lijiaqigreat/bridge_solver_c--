@@ -3,7 +3,7 @@
 
 #include "base_type.h"
 
-struct Result{
+typedef struct {
  /**
   * coordinate of all joints
   */
@@ -36,7 +36,7 @@ struct Result{
  Double minForce[MAX_MEMBER];
  Dollar totalCost;
  Status status;
-};
+} Result;
 char* print(const Result* result);
 
 #endif

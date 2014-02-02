@@ -1,7 +1,7 @@
 
 #include "optimizer.h"
 
-int optimize(TypeHintCostB* f,const OptimizeTask* task,bool debug){
+int optimize(TypeHintCostB* f,const OptimizeTask* task,Bool debug){
     //used as final return
     //index of type with minCost for given member
     Byte memberMinIndex[MAX_MEMBER];
@@ -22,14 +22,15 @@ int optimize(TypeHintCostB* f,const OptimizeTask* task,bool debug){
    
     //update bundleLength[0]
     bundleLength[0]=0;
-    for(int t=0;t<task->memberSize;++t){
+    int t;
+    for(t=0;t<task->memberSize;++t){
      bundleLength[0]+=task->length[t];
     }
    
     //update memberMinIndex, bundleMinCost[0]
     bundleMinCost[0]=0;
     bundleRemain[0]=(TestMask)(1L<<task->memberSize)-1;
-    for(int t=0;t<task->typeSize;++t){
+    for(t=0;t<task->typeSize;++t){
      TestMask valid=bundleRemain[0]&task->typeTestMask[t];
      bundleRemain[0]^=valid;
      int tmp=0;
@@ -51,7 +52,7 @@ int optimize(TypeHintCostB* f,const OptimizeTask* task,bool debug){
    
     int level=0;
     int count[7];
-    for(int t=0;t<7;t++){
+    for(t=0;t<7;t++){
      count[t]=0;
     }
     while(level>-1){
@@ -64,13 +65,13 @@ int optimize(TypeHintCostB* f,const OptimizeTask* task,bool debug){
       if(bundleCost[level] < f->cost){
        //copy to f
        f->cost=bundleCost[level];
-       for(int t=0;t<level;++t){
+       for(t=0;t<level;++t){
         f->bundle[t]=task->index[bundle[t+1]];
        }
-       for(int t=0;t<task->memberSize;++t){
+       for(t=0;t<task->memberSize;++t){
         TestMask tmpMask=((TestMask)(1))<<t;
         Byte tmp=level-1;
-        while(true){
+        while(TRUE){
          if(task->typeTestMask[bundle[tmp+1]]&bundleRemain[tmp]&(tmpMask)){
           f->member[t]=tmp;
           break;
@@ -126,15 +127,15 @@ int optimize(TypeHintCostB* f,const OptimizeTask* task,bool debug){
      }
      //TODO optimize performance, take advantage of bitset.
      while(valid!=0){
-      int t=FFSLL(valid)-1;
-      bundleLength[level] -= task->length[t];
-      bundleCost[level] +=task->cost[bundle[level]]*task->length[t];
-      bundleMinCost[level]-=task->cost[memberMinIndex[t]]*task->length[t];
-      valid^=1L<<t;
+      int tt=FFSLL(valid)-1;
+      bundleLength[level] -= task->length[tt];
+      bundleCost[level] +=task->cost[bundle[level]]*task->length[tt];
+      bundleMinCost[level]-=task->cost[memberMinIndex[tt]]*task->length[tt];
+      valid^=1L<<tt;
      }
     }
     if(debug){
-     for(int t=0;t<7;t++){
+     for(t=0;t<7;t++){
       printf("counter %d:%d\n",t,count[t]);
      }
     }

@@ -1,0 +1,7 @@
+/tmp/ccyGm9TI.o: In function `analyze':
+analyzer.c:(.text+0x472): undefined reference to `sqrt'
+/tmp/cckuKLAI.o: In function `setupTypes':
+type.c:(.text+0x273): undefined reference to `sqrt'
+/tmp/cckuKLAI.o: In function `getCompressionStrength':
+type.c:(.text+0x42d): undefined reference to `pow'
+collect2: ld returned 1 exit status

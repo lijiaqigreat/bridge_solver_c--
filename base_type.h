@@ -29,9 +29,13 @@
 #define DEADLOADFACTOR 1.25
 #define LIVELOADFACTOR 2.3275
 
+#define TRUE 1
+#define FALSE 0
+
 //TODO double check max_load
 #include <stdio.h>
 
+typedef char Bool;
 /**
  * useful for space critical application
  */
@@ -58,20 +62,20 @@ typedef __uint128_t TestMask;
  * a signed integer representing relative coordinate
  * to positionHint.
  */
-struct PositionHintB{
+typedef struct {
  Byte joints[MAX_FREE_JOINT];
-};
+} PositionHintB;
 
 /**
  * coordinate of all joints in unit of quarter meter.
  */
-struct PositionHint{
+typedef struct {
  Int xy[MAX_EQUATION];
-};
+} PositionHint;
 /**
  * value of the main table
  */
-struct TypeHintCostB{
+typedef struct {
  /**
   * typeIndex of each bundle, have to be in order
   */
@@ -86,26 +90,13 @@ struct TypeHintCostB{
   * accurate cost for bridge design.
   */
  Dollar cost;
-};
+} TypeHintCostB;
 
 /**
  * struct for GPU? to use 
  * WARNING: positionHintB is not contained
  */
-struct OptimizeTask{
- /*
-bitarray: member_size*valid_type_size
-length for each member
-cost for each type,
-index for each type,
-bundle cost,
-cap_cost
-x=member_size, 64?
-y=valid_type_size, 256? 100?
-x*y*(1/8) + x*8 + y*(8+1) + 8 + 8
-
-MAX_BUNDLE
- */
+typedef struct {
  
  //postionHint sensitive
 
@@ -141,54 +132,18 @@ MAX_BUNDLE
 
  Dollar bundleCost;
  Double minLength;
-};
-struct OptimizeTask2{
- //postionHint sensitive
-
- /**
-  * testMask for each type worth considering
-  */
- TestMask typeTestMask[MAX_TYPE];
- /**
-  * length of each member
-  */
- Double length[MAX_MEMBER];
- /**
-  * cost of each type
-  * unit: Dollar/meter
-  */
- //Dollar cost[MAX_TYPE];
- /**
-  * actual global index of each type
-  */
- //Byte index[MAX_TYPE];
- /**
-  * number of types worth considering
-  */
- //Int typeSize;
- /**
-  * used to speed up optimization
-  * TODO test speed difference, might not be significant.
-  */
- Dollar capCost;
-
- //bridgeInfo sensitive
-
- //Dollar bundleCost;
- //Int memberSize;
- //Double minLength;
-};
+} OptimizeTask;
 /**
  * store the connection configuration of a member.
  * j1,j2 is the 
  */
-struct MemberLink{
+typedef struct {
  Int j1,j2;
-};
+} MemberLink;
 /**
  * TODO need perfection
  */
-enum Status{
+typedef enum {
  LOADED,
  SOLVED_GOOD,
  SOLVED_UNSTABLE,
@@ -197,7 +152,7 @@ enum Status{
  OPTIMIZED_WORSE,
  OPTIMIZED_MAX_BUNDLE,
  OPTIMIZED_MAX_COST
-};
+} Status;
 
 
 #endif

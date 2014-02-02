@@ -28,7 +28,7 @@ void setup_rc4(TRC4State *state, const char *key, int keylen)
     state->y = y;
 }
 
-unsigned long endecrypt_rc4(unsigned char *buf, unsigned long len, TRC4State *state)
+unsigned long endecrypt_rc4_state(unsigned char *buf, unsigned long len, TRC4State *state)
 {
     int x=state->x;
     int y=state->y;
@@ -50,9 +50,9 @@ unsigned long endecrypt_rc4(unsigned char *buf, unsigned long len, TRC4State *st
 
 unsigned long endecrypt_rc4(unsigned char *buf, unsigned long len){
   TRC4State state;
-  printf("key size: %lu\n",strlen(KEY));
+  //printf("key size: %lu\n",strlen(KEY));
   setup_rc4(&state, KEY, KEYLEN);
-  return endecrypt_rc4(buf, len, &state);
+  return endecrypt_rc4_state(buf, len, &state);
 }
 
 

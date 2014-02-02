@@ -8,7 +8,7 @@ typedef struct TRC4State_t {
 
 /* rc4.c */
 void setup_rc4(TRC4State *state, const char *key, int keylen);
-unsigned long endecrypt_rc4(unsigned char *buf, unsigned long len, TRC4State *state);
+unsigned long endecrypt_rc4_state(unsigned char *buf, unsigned long len, TRC4State *state);
 unsigned long endecrypt_rc4(unsigned char *buf, unsigned long len);
 
 #endif
