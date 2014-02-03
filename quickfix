@@ -1,7 +1,153 @@
-/tmp/ccyGm9TI.o: In function `analyze':
-analyzer.c:(.text+0x472): undefined reference to `sqrt'
-/tmp/cckuKLAI.o: In function `setupTypes':
-type.c:(.text+0x273): undefined reference to `sqrt'
-/tmp/cckuKLAI.o: In function `getCompressionStrength':
-type.c:(.text+0x42d): undefined reference to `pow'
-collect2: ld returned 1 exit status
+Result.c:1:1: error: stray ‘\177’ in program
+Result.c:1:1: error: stray ‘\2’ in program
+Result.c:1:1: error: stray ‘\1’ in program
+Result.c:1:1: error: stray ‘\1’ in program
+Result.c:1:8: warning: null character(s) ignored [enabled by default]
+Result.c:1:1: error: stray ‘\1’ in program
+Result.c:1:18: warning: null character(s) ignored [enabled by default]
+Result.c:1:19: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘>’ token
+Result.c:1:20: warning: null character(s) ignored [enabled by default]
+Result.c:1:19: error: stray ‘\1’ in program
+Result.c:1:22: warning: null character(s) ignored [enabled by default]
+Result.c:1:19: error: stray ‘\20’ in program
+Result.c:1:19: error: stray ‘\1’ in program
+Result.c:1:43: warning: null character(s) ignored [enabled by default]
+Result.c:1:19: error: stray ‘@’ in program
+Result.c:1:54: warning: null character(s) ignored [enabled by default]
+Result.c:1:19: error: stray ‘@’ in program
+Result.c:1:60: warning: null character(s) ignored [enabled by default]
+Result.c:1:19: error: stray ‘\10’ in program
+Result.c:1:64: warning: null character(s) ignored [enabled by default]
+Result.c:1:19: error: stray ‘\211’ in program
+Result.c:1:19: error: stray ‘\345’ in program
+Result.c:1:19: error: stray ‘\211’ in program
+Result.c:1:19: error: stray ‘\370’ in program
+Result.c:1:19: error: stray ‘\270’ in program
+Result.c:1:74: warning: null character(s) ignored [enabled by default]
+Result.c:1:78: error: expected identifier or ‘(’ before ‘]’ token
+Result.c:1:78: error: stray ‘\303’ in program
+Result.c:1:80: warning: null character(s) ignored [enabled by default]
+Result.c:1:102: error: too many decimal points in number
+Result.c:1:108: error: invalid suffix "ubuntu5" on integer constant
+Result.c:1:118: error: too many decimal points in number
+Result.c:1:123: warning: null character(s) ignored [enabled by default]
+Result.c:1:78: error: stray ‘\24’ in program
+Result.c:1:130: warning: null character(s) ignored [enabled by default]
+Result.c:1:78: error: stray ‘\1’ in program
+Result.c:1:140: warning: null character(s) ignored [enabled by default]
+Result.c:1:78: error: stray ‘\1’ in program
+Result.c:1:78: error: stray ‘\20’ in program
+Result.c:1:78: error: stray ‘\1’ in program
+Result.c:1:78: error: stray ‘\33’ in program
+Result.c:1:78: error: stray ‘\7’ in program
+Result.c:1:78: error: stray ‘\10’ in program
+Result.c:1:78: error: stray ‘\220’ in program
+Result.c:1:78: error: stray ‘\1’ in program
+Result.c:1:151: warning: null character(s) ignored [enabled by default]
+Result.c:1:78: error: stray ‘\34’ in program
+Result.c:1:154: warning: null character(s) ignored [enabled by default]
+Result.c:1:78: error: stray ‘\34’ in program
+Result.c:1:158: warning: null character(s) ignored [enabled by default]
+Result.c:1:78: error: stray ‘\17’ in program
+Result.c:1:166: warning: null character(s) ignored [enabled by default]
+Result.c:1:78: error: stray ‘\16’ in program
+Result.c:1:78: error: stray ‘\20’ in program
+Result.c:1:78: error: stray ‘\206’ in program
+Result.c:1:78: error: stray ‘\2’ in program
+Result.c:2:1: error: stray ‘\6’ in program
+Result.c:2:1: error: stray ‘\7’ in program
+Result.c:2:1: error: stray ‘\10’ in program
+Result.c:2:6: warning: null character(s) ignored [enabled by default]
+Result.c:2:17: warning: null character(s) ignored [enabled by default]
+Result.c:2:25: warning: null character(s) ignored [enabled by default]
+Result.c:2:35: warning: null character(s) ignored [enabled by default]
+Result.c:2:41: warning: null character(s) ignored [enabled by default]
+Result.c:2:47: warning: null character(s) ignored [enabled by default]
+Result.c:2:52: warning: null character(s) ignored [enabled by default]
+Result.c:2:61: warning: null character(s) ignored [enabled by default]
+Result.c:2:77: warning: null character(s) ignored [enabled by default]
+Result.c:2:92: warning: null character(s) ignored [enabled by default]
+Result.c:2:1: error: stray ‘\33’ in program
+Result.c:2:162: warning: null character(s) ignored [enabled by default]
+Result.c:2:1: error: stray ‘\1’ in program
+Result.c:2:166: warning: null character(s) ignored [enabled by default]
+Result.c:2:1: error: stray ‘\6’ in program
+Result.c:2:170: warning: null character(s) ignored [enabled by default]
+Result.c:2:1: error: stray ‘@’ in program
+Result.c:2:186: warning: null character(s) ignored [enabled by default]
+Result.c:2:1: error: stray ‘\17’ in program
+Result.c:2:194: warning: null character(s) ignored [enabled by default]
+Result.c:2:1: error: stray ‘\4’ in program
+Result.c:2:210: warning: null character(s) ignored [enabled by default]
+Result.c:2:226: warning: null character(s) ignored [enabled by default]
+Result.c:2:1: error: stray ‘\1’ in program
+Result.c:2:230: warning: null character(s) ignored [enabled by default]
+Result.c:2:1: error: stray ‘\3’ in program
+Result.c:2:234: warning: null character(s) ignored [enabled by default]
+Result.c:2:250: warning: null character(s) ignored [enabled by default]
+Result.c:2:1: error: stray ‘\4’ in program
+Result.c:2:274: warning: null character(s) ignored [enabled by default]
+Result.c:2:289: warning: null character(s) preserved in literal [enabled by default]
+Result.c:2:289: warning: missing terminating ' character [enabled by default]
+Result.c:2:1: error: missing terminating ' character
+Result.c:3:1: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\10’ in program
+Result.c:3:5: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\10’ in program
+Result.c:3:9: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\30’ in program
+Result.c:3:17: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\3’ in program
+Result.c:3:29: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\250’ in program
+Result.c:3:4: error: stray ‘\4’ in program
+Result.c:3:50: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\20’ in program
+Result.c:3:57: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\1’ in program
+Result.c:3:73: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\1’ in program
+Result.c:3:113: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\4’ in program
+Result.c:3:117: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\361’ in program
+Result.c:3:4: error: stray ‘\377’ in program
+Result.c:3:120: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\3’ in program
+Result.c:3:141: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\1’ in program
+Result.c:3:143: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\3’ in program
+Result.c:3:165: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\2’ in program
+Result.c:3:167: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\3’ in program
+Result.c:3:189: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\3’ in program
+Result.c:3:191: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\3’ in program
+Result.c:3:213: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\5’ in program
+Result.c:3:215: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\3’ in program
+Result.c:3:237: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\6’ in program
+Result.c:3:239: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\3’ in program
+Result.c:3:261: warning: null character(s) ignored [enabled by default]
+Result.c:3:4: error: stray ‘\4’ in program
+Result.c:3:263: warning: null character(s) ignored [enabled by default]
+Result.c:4:1: warning: null character(s) ignored [enabled by default]
+Result.c:4:4: error: stray ‘\22’ in program
+Result.c:4:5: warning: null character(s) ignored [enabled by default]
+Result.c:4:4: error: stray ‘\1’ in program
+Result.c:4:7: warning: null character(s) ignored [enabled by default]
+Result.c:4:4: error: stray ‘\17’ in program
+Result.c:4:17: warning: null character(s) ignored [enabled by default]
+Result.c:4:33: warning: null character(s) ignored [enabled by default]
+Result.c:4:39: warning: null character(s) ignored [enabled by default]
+Result.c:4:4: error: stray ‘\2’ in program
+Result.c:4:49: warning: null character(s) ignored [enabled by default]
+Result.c:4:4: error: stray ‘\2’ in program
+Result.c:4:53: warning: null character(s) ignored [enabled by default]
+make: *** [Result.o] Error 1
