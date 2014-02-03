@@ -1,29 +1,26 @@
 
 #include "BridgeInfoIO.h"
 #include "rc4.h"
+#include <glib/giochannel.h>
 
-unsigned char* readFile(const char* path,Bool encrypt){
-    FILE *fp;
-    size_t n;
-
-    fp = fopen(path, "rb");
-    if (!fp) {
+guchar* readFile(const gchar* path,Bool encrypt){
+    GIOChannel *ch=g_io_channel_new_file(path,"r",NULL);
+    g_io_channel_set_encoding(ch,NULL,NULL);
+    if (!ch) {
         fprintf(stderr, "can't open input file\n");
         return 0;
     }
-    fseek(fp, 0L, SEEK_END);
-    n = ftell(fp);
-    unsigned char* buf=(unsigned char*) malloc(n+1L);
-    fseek(fp, 0L, SEEK_SET);
-    fread(buf, 1, n, fp);
+    guchar *buf=NULL;
+    gsize size;
+    g_io_channel_read_to_end(ch,(gchar**)&buf,&size,0);
+    printf("%d,%d,%d\n",(int)size,0,0);
     if(encrypt){
-        endecrypt_rc4(buf,n);
+        endecrypt_rc4(buf,(int)size);
     }
-    fclose(fp);
-    buf[n] = '\0';
+    g_io_channel_unref(ch);
     return buf;
 }
-int writeFile(const char* path, unsigned char* buf){
+int writeFile(const gchar* path, const guchar* buf){
     FILE *fp;
     size_t n;
     
@@ -40,9 +37,11 @@ int writeFile(const char* path, unsigned char* buf){
     return 0;
 }
 
-const BridgeInfo* loadBridge(const char* path){
+const BridgeInfo* loadBridge(const gchar* path){
     /* encrypt buffer */
-    char* buf=(char*) readFile(path,TRUE);
+    printf("test!\n");
+    BridgeInfo* f=(BridgeInfo*) malloc(sizeof(BridgeInfo));
+    gchar* buf=(gchar*) readFile(path,TRUE);
     printf("decrypted test:\n%s\n",buf);
     int year;
     int jointSize;
@@ -61,7 +60,6 @@ const BridgeInfo* loadBridge(const char* path){
         code[9-t]=conditionID%10;
         conditionID/=10;
     }
-    BridgeInfo* f=(BridgeInfo*) malloc(sizeof(BridgeInfo));
     char* buf2=(char*) readFile(TYPE_PATH,FALSE);
     setupTypes((TypeB*)(&f->types[0]),buf2);
     f->buf=buf;

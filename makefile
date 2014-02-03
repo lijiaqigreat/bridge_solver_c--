@@ -1,9 +1,10 @@
 CC=gcc
-CFLAGS=-c -Wall
+CFLAGS=-c -Wall `pkg-config --cflags glib-2.0`
+LIBS=-L/usr/lib -lm -lglib-2.0
 
 all: bridge_solver
 bridge_solver: main.o rc4.o analyzer.o optimizer.o BridgeInfoIO.o Result.o type.o
-	$(CC) *.o -o bridge_solver -lm
+	$(CC) *.o -o bridge_solver $(LIBS) 
 main.o: main.c
 	$(CC) $(CFLAGS) main.c -o main.o
 rc4.o: rc4.c
@@ -18,4 +19,6 @@ Result.o: Result.c
 	$(CC) $(CFLAGS) Result.c -o Result.o
 type.o: type.c
 	$(CC) $(CFLAGS) type.c -o type.o
+clean:
+	rm *.o
 

@@ -29,16 +29,17 @@
 #define DEADLOADFACTOR 1.25
 #define LIVELOADFACTOR 2.3275
 
-#define TRUE 1
-#define FALSE 0
 
 //TODO double check max_load
 #include <stdio.h>
+#include <glib.h>
 
-typedef char Bool;
+//gboolean
+typedef gboolean Bool;
 /**
  * useful for space critical application
  */
+//gchar
 typedef unsigned char Byte;
 /**
  * TODO make sure it's 64bit to be capatible with original Java implementation.
