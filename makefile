@@ -15,7 +15,7 @@ optimizer.o: optimizer.c
 BridgeInfoIO.o: BridgeInfoIO.c
 	$(CC) $(CFLAGS) BridgeInfoIO.c -o BridgeInfoIO.o
 Result.o: Result.c
-	$(CC) $(CFLAGS) Result.c -o Result.c
+	$(CC) $(CFLAGS) Result.c -o Result.o
 type.o: type.c
 	$(CC) $(CFLAGS) type.c -o type.o
 
