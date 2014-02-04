@@ -1,0 +1,9 @@
+
+keep memory small
+
+do nothing if element relatively large
+
+insert(element);
+
+pull first n relative small elements
+pull(n)
