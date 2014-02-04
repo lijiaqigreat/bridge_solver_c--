@@ -3,31 +3,16 @@
 #include "Result.h"
 #include "analyzer.h"
 #include "optimizer.h"
-#include <time.h>
-#include <stdlib.h>
 #include <math.h>
 #include <glib.h>
+#include "manager.h"
 typedef __uint128_t BigInt;
 int test1();
 int test2();
+int test3();
 int main(){
-    /*
-    GError *error=NULL;
-    GIOChannel *ch = g_io_channel_new_file("Eg/2014/test2.bdc","r",NULL);
-    printf("encoding: %s",g_io_channel_get_encoding(ch));
-    g_io_channel_set_encoding(ch,NULL,NULL);
-    printf("encoding: %s",g_io_channel_get_encoding(ch));
-    gchar *buf=NULL;
-    gsize size;
-    g_io_channel_read_to_end(ch,&buf,&size,&error);
-    printf("size: %d\n",(int)size);
-    printf("message: %d,%d,%s\n",error->code,G_FILE_ERROR_FAILED,error->message);
-    printf(buf);
-    
-    g_io_channel_unref(ch);
-    free(buf);
-    */
-    test2();
+    test3();
+    //printf("%lf\n",-G_MAXDOUBLE);
     return 0;
 }
 
@@ -57,6 +42,7 @@ int test1(){
     printf("\n");
 }
 */
+/*
 int test2(){
     const BridgeInfo* f=loadBridge("Eg/2014/test2.bdc");
     Result* result=(Result*)malloc(sizeof(Result));
@@ -90,4 +76,27 @@ int test2(){
 
     free((void*)f);
     return 0;
+}
+*/
+#define KEY(p) (*(Double*)(p))
+int test3(){
+    TaskQueue *queue=queue_init(sizeof(Double),20,10);
+    int t;
+    Double tmp;
+    for(t=0;t<1000;t++){
+        tmp=g_random_double();
+        queue_insert(queue,&tmp);
+    }
+    for(t=0;t<queue->size3_;t++){
+        Double a=queue->interval[t];
+        int size=queue->dataSize[t];
+        int t2;
+        
+        printf("block %3d, size: %d, interval: %lf\n",t,size,a);
+        for(t2=0;t2<size;t2++){
+            printf("%lf ",KEY(queue->data[t]+queue->size1*t2));
+        }
+        printf("\n");
+    }
+
 }
