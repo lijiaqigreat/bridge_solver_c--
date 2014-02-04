@@ -113,7 +113,7 @@ Double quickselect(gpointer block,gpointer tmp,int size,gint32 b,gint32 c){
 }
 void queue_free(TaskQueue *queue){
     int t;
-    for(t=0;t<size3_;t++){
+    for(t=0;t<queue->size3_;t++){
         g_free(queue->data[t]);
     }
     free(queue->interval);
