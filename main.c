@@ -10,6 +10,7 @@ typedef __uint128_t BigInt;
 int test1();
 int test2();
 int test3();
+int test4();
 int main(){
     test4();
     //printf("%lf\n",-G_MAXDOUBLE);
@@ -99,25 +100,30 @@ int test3(){
         printf("\n");
     }
 
+    return 0;
 }
 int test4(){
-    CostTable *table=table_init(8,8,0.7);
-    int size=10;
+    CostTable *table=table_init(sizeof(Double),16,0.5);
+    int size=100;
     int t;
     Double *table2=(Double*)malloc(size*2*sizeof(Double));
     Double tmp1;
     Double tmp2;
+    printf("size: %d,%d\n",(int)sizeof(Double),(int)sizeof(Dollar));
     for(t=0;t<size;t++){
         tmp1=g_random_double();
         tmp2=g_random_double();
         table_insert(table,&tmp1,tmp2);
         table2[2*t]=tmp1;
         table2[2*t+1]=tmp2;
+        int i=table_hash(&tmp1,8,table->size2);
+        printf("%1.5f,%1.5f,%1.5f,%1.5f,%d\n",tmp1,tmp2,*(Double*)(table->data+16*i),*(Double*)(table->data+16*i+8),i);
     }
+
     for(t=0;t<size;t++){
         tmp1=table2[2*t];
         tmp2=table_peek(table,&tmp1);
-        printf("%1.5f,%1.5f,%1.f\n",tmp1,tmp2,table2[2*t+1]);
+        printf("%1.5f,%1.5f,%1.5f\n",tmp1,tmp2,table2[2*t+1]);
     }
-    
+    return 0;
 }

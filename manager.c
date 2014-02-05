@@ -1,5 +1,6 @@
 #include "manager.h"
 #include <string.h>
+#include <stdlib.h>
 Double quickselect(gpointer block,gpointer tmp,int size,gint32 b,gint32 c);
 
 TaskQueue *queue_init(int size1,int size2,int size3){
@@ -122,9 +123,8 @@ void queue_free(TaskQueue *queue){
     free(queue);
 }
 
+#define GET_COST(p) (*(Dollar*)((p)+size1))
 
-#define TABLE_VALUE(table,t) \
-    (*(Dollar*)(table->data+(t)*(table->size1+sizeof(Dollar))+table->size1))
 CostTable *table_init(int size1,int size2,float limit){
     CostTable *f=g_new(CostTable,1);
     f->size1=size1;
@@ -134,13 +134,14 @@ CostTable *table_init(int size1,int size2,float limit){
     f->data=g_malloc((size1+sizeof(Dollar))*size2);
     int t;
     for(t=0;t<size2;t++){
-        TABLE_VALUE(f,t)=EMPTY_VALUE;
+        (*(Dollar*)(f->data+t*(f->size1+sizeof(Dollar))+f->size1))=EMPTY_VALUE;
     }
+    return f;
 }
 
 #define GET_BYTE(p) (*(const guchar*)(p))
 int table_hash(gconstpointer element,int size1,int size2){
-    int f=0;
+    gsize f=0;
     int t=0;
     for(t=0;t<size1;t++){
         f=f*65599+GET_BYTE(element+t);
@@ -149,65 +150,83 @@ int table_hash(gconstpointer element,int size1,int size2){
 }
 
 
-Dollar table_peek(CostTable *table,gconstpointer element){
-    int t=table_hash(element,table->size1,table->size2);
+Dollar table_peek(const CostTable *table,gconstpointer element){
     int size1=table->size1;
-    gpointer data=table->data+size1*t;
-    while(*(Dollar*)(data+size1)!=EMPTY_VALUE){
-        if(memcmp(element,data,size1)){
-            return *(Dollar*)(data+size1);
+    int i=table_hash(element,size1,table->size2);
+    gpointer data=table->data+(size1+sizeof(Dollar))*i;
+    while(GET_COST(data)!=EMPTY_VALUE){
+        if(memcmp(element,data,size1)==0){
+            return GET_COST(data);
         }else{
             data+=size1+sizeof(Dollar);
-            t++;
-            if(t==table->size2){
+            i++;
+            if(i==table->size2){
                 data=table->data;
+                i=0;
             }
         }
     }
     return EMPTY_VALUE;
 }
 
+int _table_insert(CostTable *table,gconstpointer element,Dollar cost);
 int table_insert(CostTable *table,gconstpointer element,Dollar cost){
-    int size1=table->size1;
-    int size2=table->size2;
     //expand?
-    if(size2*table->limit<table->size2_+1){
-        //size2 is new size
-        size2*=2;
+    if(table->size2*table->limit<table->size2_+1){
+        int size1=table->size1;
+        int size2=table->size2;
         //old data
         gpointer data1=table->data;
+        gpointer data1_=data1;
         //new data
-        gpointer data2=g_malloc((table->size1+sizeof(Dollar))*table->size2*2);
+        table->data=g_malloc((size1+sizeof(Dollar))*size2*2);
+        table->size2*=2;
+        table->size2_=0;
+
         //initialize data2
         int t;
-        for(t=0;t<size2;t++){
-            *(Dollar*)(data2+t*(size1*sizeof(Dollar)))=EMPTY_VALUE;
+        for(t=0;t<size2*2;t++){
+            GET_COST(table->data+t*(size1+sizeof(Dollar)))=EMPTY_VALUE;
         }
+
         //insert all key-value pairs
-        for(t=0;t<table->size2;t++){
-            if(*(Dollar*)(data1+size1)!=EMPTY_VALUE){
-                int i=table_hash(data1,size1,size2);
-                memcpy(data2+i*(size1+sizeof(Dollar)),data1,size1+sizeof(Dollar));
+        for(t=0;t<size2;t++){
+            if(GET_COST(data1)!=EMPTY_VALUE){
+                _table_insert(table,data1,GET_COST(data1));
             }
             data1+=size1+sizeof(Dollar);
         }
-        table->size2*=2;
+        free(data1_);
+        data1_=table->data;
     }
-    int i=table_hash(element,table->size1,table->size2);
+    //get hash
+    _table_insert(table,element,cost);
+    return 0;
+}
+int _table_insert(CostTable *table,gconstpointer element,Dollar cost){
+    int size1=table->size1;
+    int size2=table->size2;
+    int i=table_hash(element,size1,size2);
     gpointer data=table->data+(size1+sizeof(Dollar))*i;
+
+    //probe
     while(*(Dollar*)(data+size1)!=EMPTY_VALUE){
-        if(memcmp(element,data,size1)){
+        if(memcmp(element,data,size1)==0){
+            //TODO key exist
             return -1;
         }else{
             data+=size1+sizeof(Dollar);
             i++;
-            if(i==table->size2){
+            if(i==size2){
                 data=table->data;
+                i=0;
             }
         }
     }
+    //copy key, value
     memcpy(data,element,size1);
     memcpy(data+size1,&cost,sizeof(Dollar));
+    //increase size
     table->size2_++;
     return 0;
 }
