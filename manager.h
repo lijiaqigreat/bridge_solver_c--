@@ -35,6 +35,21 @@ typedef struct {
     gpointer* data;
 } TaskQueue;
 
+#define EMPTY_VALUE -1.
+/*
+ * structure of data:
+ *  positionHintB: size1
+ *  cost: 8
+ * cost is EMPTY_VALUE if the slot is empty
+ */
+typedef struct {
+    int size1;
+    int size2;
+    int size2_;
+    float limit;
+    gpointer data;
+} CostTable;
+
 /**
  * precondition:
  *     size1>=sizeof(Double)
@@ -45,6 +60,13 @@ TaskQueue *queue_init(int size1,int size2,int size3);
 gchar queue_insert(TaskQueue *queue,gpointer element);
 gpointer queue_pull(TaskQueue *queue);
 void queue_free(TaskQueue *queue);
+
+CostTable *table_init(int size1,int size2,float limit);
+Dollar table_peek(CostTable *table,gconstpointer element);
+int table_insert(CostTable *table,gconstpointer element, Dollar cost);
+int table_hash(gconstpointer element,int size1,int size2);
+void table_free(CostTable *table);
+
 
 
 

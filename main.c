@@ -11,7 +11,7 @@ int test1();
 int test2();
 int test3();
 int main(){
-    test3();
+    test4();
     //printf("%lf\n",-G_MAXDOUBLE);
     return 0;
 }
@@ -99,4 +99,25 @@ int test3(){
         printf("\n");
     }
 
+}
+int test4(){
+    CostTable *table=table_init(8,8,0.7);
+    int size=10;
+    int t;
+    Double *table2=(Double*)malloc(size*2*sizeof(Double));
+    Double tmp1;
+    Double tmp2;
+    for(t=0;t<size;t++){
+        tmp1=g_random_double();
+        tmp2=g_random_double();
+        table_insert(table,&tmp1,tmp2);
+        table2[2*t]=tmp1;
+        table2[2*t+1]=tmp2;
+    }
+    for(t=0;t<size;t++){
+        tmp1=table2[2*t];
+        tmp2=table_peek(table,&tmp1);
+        printf("%1.5f,%1.5f,%1.f\n",tmp1,tmp2,table2[2*t+1]);
+    }
+    
 }
