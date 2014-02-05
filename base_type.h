@@ -78,6 +78,10 @@ typedef struct {
  */
 typedef struct {
  /**
+  * accurate cost for bridge design.
+  */
+ Dollar cost;
+ /**
   * typeIndex of each bundle, have to be in order
   */
  Byte bundle[MAX_BUNDLE];
@@ -87,10 +91,6 @@ typedef struct {
   * but whole 8 bits are used for convidience. 
   */
  Byte member[MAX_MEMBER];
- /**
-  * accurate cost for bridge design.
-  */
- Dollar cost;
 } TypeHintCostB;
 
 /**

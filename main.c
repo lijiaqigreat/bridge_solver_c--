@@ -81,7 +81,7 @@ int test2(){
 */
 #define KEY(p) (*(Double*)(p))
 int test3(){
-    TaskQueue *queue=queue_init(sizeof(Double),20,10);
+    TaskQueue *queue=queue_init(NULL,sizeof(Double),20,10);
     int t;
     Double tmp;
     for(t=0;t<1000;t++){
@@ -103,7 +103,7 @@ int test3(){
     return 0;
 }
 int test4(){
-    CostTable *table=table_init(sizeof(Double),16,0.5);
+    CostTable *table=table_init(NULL,sizeof(Double),16,0.5);
     int size=100;
     int t;
     Double *table2=(Double*)malloc(size*2*sizeof(Double));

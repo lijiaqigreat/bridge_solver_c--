@@ -3,8 +3,10 @@
 #include <stdlib.h>
 Double quickselect(gpointer block,gpointer tmp,int size,gint32 b,gint32 c);
 
-TaskQueue *queue_init(int size1,int size2,int size3){
-    TaskQueue* f=g_new(TaskQueue,1);
+TaskQueue *queue_init(TaskQueue *f,int size1,int size2,int size3){
+    if(f==NULL){
+        f=g_new(TaskQueue,1);
+    }
     f->size1=size1;
     f->size2=size2;
     f->size3=size3;
@@ -125,8 +127,10 @@ void queue_free(TaskQueue *queue){
 
 #define GET_COST(p) (*(Dollar*)((p)+size1))
 
-CostTable *table_init(int size1,int size2,float limit){
-    CostTable *f=g_new(CostTable,1);
+CostTable *table_init(CostTable *f,int size1,int size2,float limit){
+    if(f==NULL){
+        f=g_new(CostTable,1);
+    }
     f->size1=size1;
     f->size2=size2;
     f->size2_=0;
@@ -235,4 +239,32 @@ void table_free(CostTable *table){
     free(table->data);
     free(table);
 }
+
+
+Manager *manager_init(Manager *f,const BridgeInfo *bridge,int queueSize2,int queueSize3,float tableLimit){
+    if(f==NULL){
+        f=g_new0(Manager,1);
+    }
+    
+}
+void manager_rebase(Manager * f,const BridgeInfo *bridge){
+    free(f->bridge);
+    f->bridge=bridge;
+    //freeJointSize
+    int freeJointSize=bridge->totalJointSize-bridge->fixedJointSize;
+    int hintSize=sizeof(Dollar)+MAX_BUNDLE+bridge->memberSize;
+    int queueSize1=hintSize+freeJointSize;
+    f->queue=queue_init(queueSize1,queueSize2,queueSize3);
+    f->table=table_init(freeJointSize,TABLE_SIZE,tableLimit);
+    gpointer task=g_malloc(queueSize1);
+    //set typeHint
+    memcpy(task,bridge->typeHint,hintSize);
+    //set positionHint
+    memset(task+hintSize,0,freeJointSize);
+
+    queue_insert(queue,task);
+    free(task);
+    
+}
+
 
