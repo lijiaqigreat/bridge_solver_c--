@@ -5,9 +5,9 @@ int optimize(TypeHintCostB* f,const OptimizeTask* task,Bool debug){
     //used as final return
     //index of type with minCost for given member
     Byte memberMinIndex[MAX_MEMBER];
-   
+
     //used for recursion
-   
+
     //bundle[n+1]=typeIndex for bundle n;
     Byte bundle[MAX_BUNDLE+2];
     //bundleLength[n] is the remaining totalLength after having first n bundles

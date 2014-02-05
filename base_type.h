@@ -76,6 +76,7 @@ typedef struct {
 /**
  * value of the main table
  */
+#define TYPE_HINT_COST_SIZE(memberSize) (sizeof(Dollar)+MAX_BUNDLE*sizeof(Byte)+(memberSize))
 typedef struct {
  /**
   * accurate cost for bridge design.

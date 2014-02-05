@@ -12,7 +12,7 @@ int test2();
 int test3();
 int test4();
 int main(){
-    test4();
+    test2();
     //printf("%lf\n",-G_MAXDOUBLE);
     return 0;
 }
@@ -43,7 +43,6 @@ int test1(){
     printf("\n");
 }
 */
-/*
 int test2(){
     const BridgeInfo* f=loadBridge("Eg/2014/test2.bdc");
     Result* result=(Result*)malloc(sizeof(Result));
@@ -78,7 +77,6 @@ int test2(){
     free((void*)f);
     return 0;
 }
-*/
 #define KEY(p) (*(Double*)(p))
 int test3(){
     TaskQueue *queue=queue_init(NULL,sizeof(Double),20,10);

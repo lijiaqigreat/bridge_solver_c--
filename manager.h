@@ -1,12 +1,12 @@
 #ifndef MANAGER_H
 #define MANAGER_H
 #include "base_type.h"
-/**
- * structure of element:
- *  cost: sizeof(Dollar)
- *  bundle: MAX_BUNDLE
- *  member: memberSize
- *  joint: freeJointSize
+#include "BridgeInfo.h"
+/*
+ * structure of data:
+ *  cost: 8
+ *  positionHintB: size1
+ * cost is EMPTY_VALUE if the slot is empty
  */
 typedef struct {
     /**
@@ -44,12 +44,6 @@ typedef struct {
 
 #define EMPTY_VALUE -1.
 #define TABLE_SIZE 128
-/*
- * structure of data:
- *  positionHintB: size1
- *  cost: 8
- * cost is EMPTY_VALUE if the slot is empty
- */
 typedef struct {
     int size1;
     int size2;
@@ -58,11 +52,11 @@ typedef struct {
     gpointer data;
 } CostTable;
 
-struct Manager{
+typedef struct{
     TaskQueue queue;
     CostTable table;
     const BridgeInfo *bridge;
-}
+} Manager;
 
 TaskQueue *queue_init(TaskQueue *f,int size1,int size2,int size3);
 gchar queue_insert(TaskQueue *queue,gpointer element);
@@ -71,7 +65,7 @@ void queue_free(TaskQueue *queue);
 
 CostTable *table_init(CostTable *f,int size1,int size2,float limit);
 Dollar table_peek(const CostTable *table,gconstpointer element);
-int table_insert(CostTable *table,gconstpointer element, Dollar cost);
+Dollar table_insert(CostTable *table,gconstpointer element, Dollar cost);
 int table_hash(gconstpointer element,int size1,int size2);
 void table_free(CostTable *table);
 

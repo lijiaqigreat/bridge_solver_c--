@@ -173,8 +173,9 @@ Dollar table_peek(const CostTable *table,gconstpointer element){
     return EMPTY_VALUE;
 }
 
-int _table_insert(CostTable *table,gconstpointer element,Dollar cost);
-int table_insert(CostTable *table,gconstpointer element,Dollar cost){
+Dollar _table_insert(CostTable *table,gconstpointer element,Dollar cost);
+
+Dollar table_insert(CostTable *table,gconstpointer element,Dollar cost){
     //expand?
     if(table->size2*table->limit<table->size2_+1){
         int size1=table->size1;
@@ -204,10 +205,9 @@ int table_insert(CostTable *table,gconstpointer element,Dollar cost){
         data1_=table->data;
     }
     //get hash
-    _table_insert(table,element,cost);
-    return 0;
+    return _table_insert(table,element,cost);
 }
-int _table_insert(CostTable *table,gconstpointer element,Dollar cost){
+Dollar _table_insert(CostTable *table,gconstpointer element,Dollar cost){
     int size1=table->size1;
     int size2=table->size2;
     int i=table_hash(element,size1,size2);
@@ -217,7 +217,7 @@ int _table_insert(CostTable *table,gconstpointer element,Dollar cost){
     while(*(Dollar*)(data+size1)!=EMPTY_VALUE){
         if(memcmp(element,data,size1)==0){
             //TODO key exist
-            return -1;
+            return *(Dollar*)(data+size1);
         }else{
             data+=size1+sizeof(Dollar);
             i++;
@@ -232,7 +232,7 @@ int _table_insert(CostTable *table,gconstpointer element,Dollar cost){
     memcpy(data+size1,&cost,sizeof(Dollar));
     //increase size
     table->size2_++;
-    return 0;
+    return EMPTY_VALUE;
 }
 
 void table_free(CostTable *table){
@@ -245,26 +245,68 @@ Manager *manager_init(Manager *f,const BridgeInfo *bridge,int queueSize2,int que
     if(f==NULL){
         f=g_new0(Manager,1);
     }
-    
-}
-void manager_rebase(Manager * f,const BridgeInfo *bridge){
-    free(f->bridge);
     f->bridge=bridge;
     //freeJointSize
     int freeJointSize=bridge->totalJointSize-bridge->fixedJointSize;
-    int hintSize=sizeof(Dollar)+MAX_BUNDLE+bridge->memberSize;
+    int hintSize=TYPE_HINT_COST_SIZE(bridge->memberSize);
     int queueSize1=hintSize+freeJointSize;
-    f->queue=queue_init(queueSize1,queueSize2,queueSize3);
-    f->table=table_init(freeJointSize,TABLE_SIZE,tableLimit);
+
+    queue_init(&f->queue,queueSize1,queueSize2,queueSize3);
+    table_init(&f->table,freeJointSize,TABLE_SIZE,tableLimit);
+
     gpointer task=g_malloc(queueSize1);
     //set typeHint
-    memcpy(task,bridge->typeHint,hintSize);
+    memcpy(task,&bridge->typeHint,hintSize);
     //set positionHint
     memset(task+hintSize,0,freeJointSize);
 
-    queue_insert(queue,task);
+    queue_insert(&f->queue,task);
+
     free(task);
     
+    return f;
+}
+#define UPDATE_TASK(value, b2, tmp, tmp2, manager, hintSize) \
+        *tmp2=b2; \
+        value=table_peek(&manager->table,tmp+hintSize); \
+        if(value==EMPTY_VALUE){ \
+            queue_insert(&manager->queue,tmp); \
+        }
+
+int manager_update(Manager *manager,gconstpointer task,int taskSize){
+    int freeJointSize=manager->bridge->totalJointSize-manager->bridge->fixedJointSize;
+    int t;
+    int hintSize=TYPE_HINT_COST_SIZE(manager->bridge->memberSize);
+    int tt;
+    int count=0;
+    for(tt=0;tt<taskSize;tt++){
+        Double value=table_insert(&manager->table,task+hintSize,*(Dollar*)task);
+        if(value!=EMPTY_VALUE){
+            g_assert(value==*(Dollar*)task);
+            continue;
+        }
+        
+        gpointer tmp=g_malloc(freeJointSize+hintSize);
+        Byte *tmp2=(Byte*)(tmp+sizeof(Dollar));
+        memcpy(tmp,task,hintSize+freeJointSize);
+        for(t=0;t<freeJointSize;t++){
+            Byte b2;
+            Byte b=*(tmp2);
+            b2=b^((b^(b+1))&15);
+            UPDATE_TASK(value,b2,tmp,tmp2,manager,hintSize);
+            b2=b^((b^(b-1))&15);
+            UPDATE_TASK(value,b2,tmp,tmp2,manager,hintSize);
+            b2=b^((b^(b+16))&240);
+            UPDATE_TASK(value,b2,tmp,tmp2,manager,hintSize);
+            b2=b^((b^(b-16))&240);
+            UPDATE_TASK(value,b2,tmp,tmp2,manager,hintSize);
+            *tmp2=b;
+
+            tmp2++;
+        }
+        task+=hintSize+freeJointSize;
+    }
+    return 0;
 }
 
 

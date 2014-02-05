@@ -90,4 +90,5 @@ typedef struct {
  
 } BridgeInfo;
 
+#define bridgeInfo_free(bridge) free((bridge)->buf);free(bridge);
 #endif
