@@ -61,7 +61,7 @@ int test2(){
 
     int n=analyze(result,&task,f,element);
     printf("return: %d\n",n);
-    n=optimize(thc, &task,TRUE);
+    n=optimize(thc, &task);
     
     int t;
     for(t=0;t<33;t++){

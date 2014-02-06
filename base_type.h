@@ -29,10 +29,15 @@
 #define DEADLOADFACTOR 1.25
 #define LIVELOADFACTOR 2.3275
 
+#define EMPTY_VALUE -1.
+#define GET_BYTE(p) (*(const guchar*)(p))
+#define GET_DOLLAR(p) (*(Dollar*)(p))
 
 //TODO double check max_load
 #include <stdio.h>
 #include <glib.h>
+#include <stdlib.h>
+#include <string.h>
 
 //gboolean
 typedef gboolean Bool;
@@ -156,5 +161,6 @@ typedef enum {
  OPTIMIZED_MAX_COST
 } Status;
 
+char* print_bytes(gconstpointer p,int size);
 
 #endif
