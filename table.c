@@ -11,7 +11,7 @@ CostTable *table_init(CostTable *f,int size1,int size2,float limit){
     f->data=g_malloc((size1+sizeof(Dollar))*size2);
     int t;
     for(t=0;t<size2;t++){
-        (*(Dollar*)(f->data+t*(f->size1+sizeof(Dollar))+f->size1))=EMPTY_VALUE;
+        GET_DOLLAR(f->data+t*(f->size1+sizeof(Dollar))+f->size1)=EMPTY_VALUE;
     }
     return f;
 }
@@ -20,6 +20,7 @@ int table_hash(gconstpointer element,int size1,int size2){
     gsize f=0;
     int t=0;
     for(t=0;t<size1;t++){
+        //65599=1<<16+1<<6-1
         f=f*65599+GET_BYTE(element+t);
     }
     return f%size2;
@@ -29,10 +30,13 @@ Dollar table_peek(const CostTable *table,gconstpointer element){
     int size1=table->size1;
     int i=table_hash(element,size1,table->size2);
     gpointer data=table->data+(size1+sizeof(Dollar))*i;
+    //nonempty entry
     while(GET_VALUE(data)!=EMPTY_VALUE){
+        //found match
         if(memcmp(element,data,size1)==0){
             return GET_VALUE(data);
         }else{
+            //linear probing
             data+=size1+sizeof(Dollar);
             i++;
             if(i==table->size2){
@@ -44,6 +48,7 @@ Dollar table_peek(const CostTable *table,gconstpointer element){
     return EMPTY_VALUE;
 }
 
+//insert without expanding
 Dollar _table_insert(CostTable *table,gconstpointer element,Dollar cost);
 
 Dollar table_insert(CostTable *table,gconstpointer element,Dollar cost){
@@ -88,8 +93,8 @@ Dollar _table_insert(CostTable *table,gconstpointer element,Dollar cost){
     //probe
     while(*(Dollar*)(data+size1)!=EMPTY_VALUE){
         if(memcmp(element,data,size1)==0){
-            //TODO key exist
-            return *(Dollar*)(data+size1);
+            //key exist
+            return GET_DOLLAR(data+size1);
         }else{
             data+=size1+sizeof(Dollar);
             i++;

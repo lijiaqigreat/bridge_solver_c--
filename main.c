@@ -13,7 +13,7 @@ int test3();
 int test4();
 int test5();
 int main(){
-    test5();
+    test4();
     //printf("%lf\n",-G_MAXDOUBLE);
     return 0;
 }
@@ -125,12 +125,9 @@ int test4(){
         int i=table_hash(&tmp1,8,table->size2);
         printf("%1.5f,%1.5f,%1.5f,%1.5f,%d\n",tmp1,tmp2,*(Double*)(table->data+16*i),*(Double*)(table->data+16*i+8),i);
     }
+    table_print(table);
+    table_free(table);
 
-    for(t=0;t<size;t++){
-        tmp1=table2[2*t];
-        tmp2=table_peek(table,&tmp1);
-        printf("%1.5f,%1.5f,%1.5f\n",tmp1,tmp2,table2[2*t+1]);
-    }
     return 0;
 }
 int test5(){

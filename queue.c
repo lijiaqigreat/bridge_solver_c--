@@ -29,29 +29,22 @@ gchar queue_insert(TaskQueue *queue,gpointer element){
         return 0;
     }else{
         queue_print(queue);
-        printf("queue spliting\n");
         gpointer block=queue->data[t];
         memcpy(block+queue->size2*queue->size1,element,queue->size1);
         gpointer tmp=(gpointer)g_malloc(queue->size1);
-        printf("queue spliting\n");
         Double cutoff = quickselect(block,tmp,queue->size1,(gint32)queue->size2+1,(gint32)((queue->size2+1)/2));
-        printf("queue spliting\n");
         g_free(tmp);
         int t2;
-        printf("queue spliting\n");
         //shift data
         for(t2=queue->size3_;t2>t;t2--){
             queue->data[t2]=queue->data[t2-1];
             queue->dataSize[t2]=queue->dataSize[t2-1];
             queue->interval[t2]=queue->interval[t2-1];
         }
-        printf("queue spliting\n");
         queue->dataSize[t]=(queue->size2+1)/2;
         queue->size3_++;
-        printf("queue spliting\n");
         //copy splited data
         if(t!=queue->size3-1){
-            printf("queue spliting\n");
             int newSize=queue->size2/2+1;
             queue->data[t+1]=(gpointer)g_malloc(queue->size1*(queue->size2+1));
             queue->dataSize[t+1]=newSize;
@@ -77,21 +70,21 @@ gchar queue_insert(TaskQueue *queue,gpointer element){
     }
 }
 gpointer queue_pull(TaskQueue *queue){
-    if(queue->size3_==0){
-        return 0;
-    }
+    g_assert(queue->size3_>0);
     gpointer f=queue->data[0];
     *(Dollar*)(f+queue->dataSize[0]*queue->size1)=EMPTY_VALUE;
-    printf("pull: %1.5lf,%1.5lf\n",*(Dollar*)f,0.);
 
+    //shift data
     int t;
     queue->size3_--;
     for(t=0;t<queue->size3_;t++){
         queue->data[t]=queue->data[t+1];
         queue->dataSize[t]=queue->dataSize[t+1];
     }
+    //fill data[0] when size3_==0
     if(queue->size3_==0){
         queue->data[0]=g_malloc(queue->size1*(queue->size2+1));
+        queue->dataSize[0]=0;
         queue->size3_++;
     }
     return f;
@@ -135,7 +128,6 @@ void queue_free(TaskQueue *queue){
     free(queue->data);
     free(queue);
 }
-#define KEY(p) (*(Dollar*)(p))
 void queue_print(TaskQueue *queue){
     printf("--- queue ---\n");
     printf("%4d|%4d|%4d|%4d\n",queue->size1,queue->size2,queue->size3,queue->size3_);
@@ -147,7 +139,7 @@ void queue_print(TaskQueue *queue){
         printf("block:%3d, size:%5d, interval: %5.3lf\n",t,size,a);
         int t2;
         for(t2=0;t2<size;t2++){
-            printf("%5.3lf:%s\n",KEY(queue->data[t]+queue->size1*t2),print_bytes(queue->data[t]+queue->size1*t2+sizeof(Dollar),queue->size1-sizeof(Dollar)));
+            printf("%5.3lf:%s\n",GET_DOLLAR(queue->data[t]+queue->size1*t2),print_bytes(queue->data[t]+queue->size1*t2+sizeof(Dollar),queue->size1-sizeof(Dollar)));
         }
     }
     printf("--- end queue ---\n");
