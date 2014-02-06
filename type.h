@@ -33,6 +33,7 @@ typedef struct {
 int setupTypes(TypeB* types,const char* buf);
 Bool ifPassType(const TypeB* type,Double compression,Double tension,Double length,Double slenderness);
 Double getCompressionStrength(const TypeB* type,Double length);
+char* type_print(TypeB* type);
 
 
 #endif

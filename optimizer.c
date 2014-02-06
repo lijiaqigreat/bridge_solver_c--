@@ -1,7 +1,7 @@
 
 #include "optimizer.h"
 
-int optimize(TypeHintCostB* f,const OptimizeTask* task,Bool debug){
+int optimize(TypeHintCostB* f,const OptimizeTask* task){
     //used as final return
     //index of type with minCost for given member
     Byte memberMinIndex[MAX_MEMBER];
@@ -132,11 +132,6 @@ int optimize(TypeHintCostB* f,const OptimizeTask* task,Bool debug){
             bundleCost[level] +=task->cost[bundle[level]]*task->length[tt];
             bundleMinCost[level]-=task->cost[memberMinIndex[tt]]*task->length[tt];
             valid^=1L<<tt;
-        }
-    }
-    if(debug){
-        for(t=0;t<7;t++){
-            printf("counter %d:%d\n",t,count[t]);
         }
     }
     return 0;

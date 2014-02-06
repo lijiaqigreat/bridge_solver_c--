@@ -51,4 +51,17 @@ Double getCompressionStrength(const TypeB* type,Double length){
            0.792*type->FyArea/lambda;
 }
 
+char* type_print(TypeB* type){
+    static char buf[200];
+    sprintf(buf,"type[%s|%0.4lfkN|%7.0lf_|$%4.2lf|%5.2lfkN|%3.3lf/m|%3.3lf_|%5.2lfkN]",
+            type->name,
+            type->weight,
+            type->AE,
+            type->cost,
+            type->tensionStrength,
+            type->inverseRadiusOfGyration,
+            type->FyArea_d_CEMoment,
+            type->FyArea);
+    return buf;
+}
 

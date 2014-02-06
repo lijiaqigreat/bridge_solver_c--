@@ -44,6 +44,9 @@ typedef struct {
 
 #define EMPTY_VALUE -1.
 #define TABLE_SIZE 128
+#define GET_BYTE(p) (*(const guchar*)(p))
+#define GET_VALUE(p) (*(Dollar*)((p)+size1))
+#define GET_DOLLAR(p) (*(Dollar*)(p))
 typedef struct {
     int size1;
     int size2;
@@ -59,6 +62,8 @@ typedef struct{
     const BridgeInfo *bridge;
 } Manager;
 
+Double quickselect(gpointer block,gpointer tmp,int size,gint32 b,gint32 c);
+
 TaskQueue *queue_init(TaskQueue *f,int size1,int size2,int size3);
 gchar queue_insert(TaskQueue *queue,gpointer element);
 gpointer queue_pull(TaskQueue *queue);
@@ -70,11 +75,13 @@ Dollar table_peek(const CostTable *table,gconstpointer element);
 Dollar table_insert(CostTable *table,gconstpointer element, Dollar cost);
 int table_hash(gconstpointer element,int size1,int size2);
 void table_free(CostTable *table);
+void table_print(CostTable *table);
 
 Manager *manager_init(Manager *manager,const BridgeInfo *bridge,int queueSize2,int queueSize3,float tableLimit);
 
 void manager_rebase(Manager * manager,const BridgeInfo *bridge);
 
+char* print_bytes(gconstpointer p,int size);
 
 
 

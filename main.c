@@ -134,10 +134,9 @@ int test4(){
     return 0;
 }
 int test5(){
-    const BridgeInfo* f=loadBridge("Eg/2014/test1.bdc");
+    const BridgeInfo* f=loadBridge("Eg/2014/test2.bdc");
     Manager *manager=manager_init(NULL,f,16,4,0.5);
     int t;
-    main_work(manager);
     main_work(manager);
     printf("starting!\n");
     for(t=0;t<33;t++){
@@ -150,7 +149,8 @@ int test5(){
         printf("member %3d:%2d|%2d|%s|%s\n",t,f->memberLinks[t].j1,f->memberLinks[t].j2,type->name,type2->name);
     }
     printf("size: %d,%d\n",manager->queue.size3,manager->table.size2_);
-
+printf("%s\n",type_print(f->types));
+    
     free((void*)f);
     printf("finished!\n");
     return 0;

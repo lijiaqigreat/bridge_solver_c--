@@ -1,8 +1,9 @@
 #include "manager.h"
 #include "Result.h"
+#include "analyzer.h"
+#include "optimizer.h"
 #include <string.h>
 #include <stdlib.h>
-Double quickselect(gpointer block,gpointer tmp,int size,gint32 b,gint32 c);
 
 TaskQueue *queue_init(TaskQueue *f,int size1,int size2,int size3){
     if(f==NULL){
@@ -101,7 +102,6 @@ gpointer queue_pull(TaskQueue *queue){
     return f;
 }
 
-#define GET_DOLLAR(p) (*(Dollar*)(p))
 Double quickselect(gpointer block,gpointer tmp,int size,gint32 b,gint32 c){
     gint32 r1,r2;
     Double key=G_MAXDOUBLE;
@@ -140,24 +140,24 @@ void queue_free(TaskQueue *queue){
     free(queue->data);
     free(queue);
 }
-#define KEY(p) (*(Double*)(p))
+#define KEY(p) (*(Dollar*)(p))
 void queue_print(TaskQueue *queue){
+    printf("--- queue ---\n");
+    printf("%4d|%4d|%4d|%4d\n",queue->size1,queue->size2,queue->size3,queue->size3_);
     int t;
     for(t=0;t<queue->size3_;t++){
         Double a=queue->interval[t];
         int size=queue->dataSize[t];
         
-        printf("block %3d, size: %d, interval: %lf\n",t,size,a);
+        printf("block:%3d, size:%5d, interval: %5.3lf\n",t,size,a);
         int t2;
         for(t2=0;t2<size;t2++){
-            printf("%lf ",KEY(queue->data[t]+queue->size1*t2));
+            printf("%5.3lf:%s\n",KEY(queue->data[t]+queue->size1*t2),print_bytes(queue->data[t]+queue->size1*t2+sizeof(Dollar),queue->size1-sizeof(Dollar)));
         }
-        printf("\n");
     }
-    
+    printf("--- end queue ---\n");
 }
 
-#define GET_COST(p) (*(Dollar*)((p)+size1))
 
 CostTable *table_init(CostTable *f,int size1,int size2,float limit){
     if(f==NULL){
@@ -175,7 +175,6 @@ CostTable *table_init(CostTable *f,int size1,int size2,float limit){
     return f;
 }
 
-#define GET_BYTE(p) (*(const guchar*)(p))
 int table_hash(gconstpointer element,int size1,int size2){
     gsize f=0;
     int t=0;
@@ -185,14 +184,13 @@ int table_hash(gconstpointer element,int size1,int size2){
     return f%size2;
 }
 
-
 Dollar table_peek(const CostTable *table,gconstpointer element){
     int size1=table->size1;
     int i=table_hash(element,size1,table->size2);
     gpointer data=table->data+(size1+sizeof(Dollar))*i;
-    while(GET_COST(data)!=EMPTY_VALUE){
+    while(GET_VALUE(data)!=EMPTY_VALUE){
         if(memcmp(element,data,size1)==0){
-            return GET_COST(data);
+            return GET_VALUE(data);
         }else{
             data+=size1+sizeof(Dollar);
             i++;
@@ -223,13 +221,13 @@ Dollar table_insert(CostTable *table,gconstpointer element,Dollar cost){
         //initialize data2
         int t;
         for(t=0;t<size2*2;t++){
-            GET_COST(table->data+t*(size1+sizeof(Dollar)))=EMPTY_VALUE;
+            GET_VALUE(table->data+t*(size1+sizeof(Dollar)))=EMPTY_VALUE;
         }
 
         //insert all key-value pairs
         for(t=0;t<size2;t++){
-            if(GET_COST(data1)!=EMPTY_VALUE){
-                _table_insert(table,data1,GET_COST(data1));
+            if(GET_VALUE(data1)!=EMPTY_VALUE){
+                _table_insert(table,data1,GET_VALUE(data1));
             }
             data1+=size1+sizeof(Dollar);
         }
@@ -239,6 +237,7 @@ Dollar table_insert(CostTable *table,gconstpointer element,Dollar cost){
     //get hash
     return _table_insert(table,element,cost);
 }
+
 Dollar _table_insert(CostTable *table,gconstpointer element,Dollar cost){
     int size1=table->size1;
     int size2=table->size2;
@@ -272,6 +271,21 @@ void table_free(CostTable *table){
     free(table);
 }
 
+void table_print(CostTable *table){
+    printf("--- table ---\n");
+    printf("%4d|%4d|%4d|%1.2f\n",table->size1,table->size2,table->size2_,table->limit);
+    //print all key-value pairs
+    int t;
+    gpointer data=table->data;
+    int size1=table->size1;
+    for(t=0;t<table->size2;t++){
+        if(GET_VALUE(data)!=EMPTY_VALUE){
+            printf("%s:%5.2f\n",print_bytes(data,table->size1),GET_VALUE(data));
+        }
+        data+=size1+sizeof(Dollar);
+    }
+    printf("--- end table ---\n");
+}
 
 Manager *manager_init(Manager *f,const BridgeInfo *bridge,int queueSize2,int queueSize3,float tableLimit){
     printf("test1!\n");
@@ -375,7 +389,7 @@ void main_work(Manager *manager){
     printf("start work\n");
     while(*(Dollar*)task!=EMPTY_VALUE){
         printf("in work!\n");
-        int n=analyze(result,&otask,manager->bridge);
+        int n=analyze(result,&otask,manager->bridge,task);
         printf("return: %d\n",n);
         n=optimize(task, &otask,TRUE);
         printf("return: %d\n",n);
@@ -384,5 +398,15 @@ void main_work(Manager *manager){
     }
     printf("start work\n");
     manager_update(manager,task_,count);
+}
+
+char* print_bytes(gconstpointer p,int size){
+    static char buf[10000];
+    int t=0;
+    for(t=0;t<size;t++){
+        sprintf(buf+t*2,"%02X",GET_BYTE(p+t));
+    }
+    buf[size*2]=0;
+    return buf;
 }
 
