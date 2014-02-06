@@ -60,7 +60,7 @@ TaskQueue *queue_init(TaskQueue *f,int size1,int size2,int size3);
  * 2 when split without remove tail
  * 3 when split and remove tail
  */
-gchar queue_insert(TaskQueue *queue,gpointer element);
+gchar queue_insert(TaskQueue *queue,gconstpointer element);
 
 
 gpointer queue_pull(TaskQueue *queue);

@@ -43,7 +43,7 @@ int analyze(Result* result,OptimizeTask* task,const BridgeInfo *bridgeInfo,gcons
     loads[bridgeInfo->deckSize] -= bridgeInfo->deckWeight / 2;
    
     for(t1=0;t1<4;t1++){
-        printf("type: %d|%3d|%s\n",t1,thc->bundle[t1],"");
+        //printf("type: %d|%3d|%s\n",t1,thc->bundle[t1],"");
     }
     //iterate members
     for (t1 = 0; t1 < bridgeInfo->memberSize; ++t1) {

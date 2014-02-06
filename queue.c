@@ -17,18 +17,16 @@ TaskQueue *queue_init(TaskQueue *f,int size1,int size2,int size3){
     return f;
 }
 
-gchar queue_insert(TaskQueue *queue,gpointer element){
+gchar queue_insert(TaskQueue *queue,gconstpointer element){
     Double key=*(Double*) element;
     int t=-1;
     while(queue->interval[++t]<key){}
-    printf("queue insert test %5.5lf\n",*(Dollar*)element);
     //not split?
     if(queue->dataSize[t]<queue->size2){
         memcpy(queue->data[t]+(queue->dataSize[t]++)*queue->size1,element,queue->size1);
         //no split
         return 0;
     }else{
-        queue_print(queue);
         gpointer block=queue->data[t];
         memcpy(block+queue->size2*queue->size1,element,queue->size1);
         gpointer tmp=(gpointer)g_malloc(queue->size1);
@@ -59,7 +57,6 @@ gchar queue_insert(TaskQueue *queue,gpointer element){
                 //split and remove tail
                 return 3;
             }
-            printf("queue spliting\n");
             //split without remove tail
             return 2;
         }else{

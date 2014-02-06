@@ -13,7 +13,7 @@ int test3();
 int test4();
 int test5();
 int main(){
-    test4();
+    test5();
     //printf("%lf\n",-G_MAXDOUBLE);
     return 0;
 }
@@ -132,23 +132,20 @@ int test4(){
 }
 int test5(){
     const BridgeInfo* f=loadBridge("Eg/2014/test2.bdc");
+    Result result;
+    OptimizeTask task;
     Manager *manager=manager_init(NULL,f,16,4,0.5);
-    int t;
+
+    analyze(&result,&task,f,&f->typeHint);
+    result_print(&result,f,manager->min);
+
     main_work(manager);
-    printf("starting!\n");
-    for(t=0;t<33;t++){
-        //printf("joint %3d:%4d|%4d\n",t,f->positionHint.xy[t*2],f->positionHint.xy[t*2+1]);
-    }
-    TypeHintCostB *thc=(TypeHintCostB*)manager->min;
-    for(t=0;t<62;t++){
-        const TypeB* type=&f->types[f->typeHint.bundle[f->typeHint.member[t]]];
-        const TypeB* type2=&f->types[thc->bundle[thc->member[t]]];
-        printf("member %3d:%2d|%2d|%s|%s\n",t,f->memberLinks[t].j1,f->memberLinks[t].j2,type->name,type2->name);
-    }
-    printf("size: %d,%d\n",manager->queue.size3,manager->table.size2_);
-printf("%s\n",type_print(f->types));
-    
-    free((void*)f);
+
+    analyze(&result,&task,f,manager->min);
+    result_print(&result,f,manager->min);
+
+    free(f);
+
     printf("finished!\n");
     return 0;
 

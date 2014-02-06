@@ -30,6 +30,7 @@
 #define LIVELOADFACTOR 2.3275
 
 #define EMPTY_VALUE -1.
+#define INVALID_VALUE 10000000.
 #define GET_BYTE(p) (*(const guchar*)(p))
 #define GET_DOLLAR(p) (*(Dollar*)(p))
 

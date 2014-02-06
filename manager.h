@@ -4,6 +4,7 @@
 #include "queue.h"
 #include "table.h"
 #include "BridgeInfo.h"
+#include "Result.h"
 
 #define TABLE_SIZE 128
 
@@ -11,8 +12,8 @@
  * Serve as central unit of the whole program
  */
 typedef struct{
-    TaskQueue queue;
-    CostTable table;
+    TaskQueue *queue;
+    CostTable *table;
     gpointer *min;
     const BridgeInfo *bridge;
 } Manager;
@@ -29,9 +30,10 @@ void manager_rebase(Manager * manager,const BridgeInfo *bridge);
  * each of mem size manager->queue->size1
  * 
  * individual task is not processed if GET_DOLLAR(task)==EMPTY_VALUE
- * TODO should this happen?
  */
-int manager_update(Manager *manager,gconstpointer task,int taskSize){
+int manager_update(Manager *manager,gconstpointer task);
+
+void update_task(Result *result,OptimizeTask *otask,gpointer task,gpointer tmp1, Manager *manager,int hintSize);
 
 /**
  * main thread function

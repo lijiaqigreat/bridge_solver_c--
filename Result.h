@@ -2,6 +2,7 @@
 #define RESULT_H
 
 #include "base_type.h"
+#include "BridgeInfo.h"
 
 typedef struct {
  /**
@@ -37,6 +38,6 @@ typedef struct {
  Dollar totalCost;
  Status status;
 } Result;
-char* print(const Result* result);
+void result_print(const Result* result, const BridgeInfo *bridgeInfo,TypeHintCostB *thc);
 
 #endif
