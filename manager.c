@@ -1,4 +1,5 @@
 #include "manager.h"
+#include "Result.h"
 #include <string.h>
 #include <stdlib.h>
 Double quickselect(gpointer block,gpointer tmp,int size,gint32 b,gint32 c);
@@ -16,6 +17,7 @@ TaskQueue *queue_init(TaskQueue *f,int size1,int size2,int size3){
     f->dataSize=g_new(int,size3+1);
     f->data=g_new(gpointer,size3+1);
     f->data[0]=g_malloc(size1*(size2+1));
+    f->dataSize[0]=0;
     return f;
 }
 
@@ -23,28 +25,37 @@ gchar queue_insert(TaskQueue *queue,gpointer element){
     Double key=*(Double*) element;
     int t=-1;
     while(queue->interval[++t]<key){}
+    printf("queue insert test %5.5lf\n",*(Dollar*)element);
     //not split?
     if(queue->dataSize[t]<queue->size2){
         memcpy(queue->data[t]+(queue->dataSize[t]++)*queue->size1,element,queue->size1);
         //no split
         return 0;
     }else{
+        queue_print(queue);
+        printf("queue spliting\n");
         gpointer block=queue->data[t];
         memcpy(block+queue->size2*queue->size1,element,queue->size1);
         gpointer tmp=(gpointer)g_malloc(queue->size1);
+        printf("queue spliting\n");
         Double cutoff = quickselect(block,tmp,queue->size1,(gint32)queue->size2+1,(gint32)((queue->size2+1)/2));
+        printf("queue spliting\n");
         g_free(tmp);
         int t2;
+        printf("queue spliting\n");
         //shift data
         for(t2=queue->size3_;t2>t;t2--){
             queue->data[t2]=queue->data[t2-1];
             queue->dataSize[t2]=queue->dataSize[t2-1];
             queue->interval[t2]=queue->interval[t2-1];
         }
+        printf("queue spliting\n");
         queue->dataSize[t]=(queue->size2+1)/2;
         queue->size3_++;
+        printf("queue spliting\n");
         //copy splited data
         if(t!=queue->size3-1){
+            printf("queue spliting\n");
             int newSize=queue->size2/2+1;
             queue->data[t+1]=(gpointer)g_malloc(queue->size1*(queue->size2+1));
             queue->dataSize[t+1]=newSize;
@@ -59,6 +70,7 @@ gchar queue_insert(TaskQueue *queue,gpointer element){
                 //split and remove tail
                 return 3;
             }
+            printf("queue spliting\n");
             //split without remove tail
             return 2;
         }else{
@@ -73,10 +85,14 @@ gpointer queue_pull(TaskQueue *queue){
         return 0;
     }
     gpointer f=queue->data[0];
+    *(Dollar*)(f+queue->dataSize[0]*queue->size1)=EMPTY_VALUE;
+    printf("pull: %1.5lf,%1.5lf\n",*(Dollar*)f,0.);
+
     int t;
     queue->size3_--;
     for(t=0;t<queue->size3_;t++){
         queue->data[t]=queue->data[t+1];
+        queue->dataSize[t]=queue->dataSize[t+1];
     }
     if(queue->size3_==0){
         queue->data[0]=g_malloc(queue->size1*(queue->size2+1));
@@ -85,8 +101,7 @@ gpointer queue_pull(TaskQueue *queue){
     return f;
 }
 
-#define SWAP(b1,b2,tmp,size) memcpy
-#define QUEUE_KEY(p) (*(Double*)(p))
+#define GET_DOLLAR(p) (*(Dollar*)(p))
 Double quickselect(gpointer block,gpointer tmp,int size,gint32 b,gint32 c){
     gint32 r1,r2;
     Double key=G_MAXDOUBLE;
@@ -95,16 +110,17 @@ Double quickselect(gpointer block,gpointer tmp,int size,gint32 b,gint32 c){
         memcpy(tmp,block+(r1*size),size);
         memcpy(block+(r1*size),block,size);
         r2=0;
-        key=QUEUE_KEY(tmp);
+        key=GET_DOLLAR(tmp);
         for(r1=1;r1<b;r1++){
-            if(QUEUE_KEY(block+r1*size)<key){
+            if(GET_DOLLAR(block+r1*size)<key){
                 memcpy(block+r2*size,block+r1*size,size);
                 r2++;
                 memcpy(block+r1*size,block+r2*size,size);
             }
         }
         memcpy(block+r2*size,tmp,size);
-        if(r2<=c){
+        if(r2<c){
+            r2++;
             block+=r2*size;
             b-=r2;
             c-=r2;
@@ -123,6 +139,22 @@ void queue_free(TaskQueue *queue){
     free(queue->dataSize);
     free(queue->data);
     free(queue);
+}
+#define KEY(p) (*(Double*)(p))
+void queue_print(TaskQueue *queue){
+    int t;
+    for(t=0;t<queue->size3_;t++){
+        Double a=queue->interval[t];
+        int size=queue->dataSize[t];
+        
+        printf("block %3d, size: %d, interval: %lf\n",t,size,a);
+        int t2;
+        for(t2=0;t2<size;t2++){
+            printf("%lf ",KEY(queue->data[t]+queue->size1*t2));
+        }
+        printf("\n");
+    }
+    
 }
 
 #define GET_COST(p) (*(Dollar*)((p)+size1))
@@ -242,56 +274,75 @@ void table_free(CostTable *table){
 
 
 Manager *manager_init(Manager *f,const BridgeInfo *bridge,int queueSize2,int queueSize3,float tableLimit){
+    printf("test1!\n");
     if(f==NULL){
         f=g_new0(Manager,1);
     }
+    printf("test!\n");
     f->bridge=bridge;
     //freeJointSize
     int freeJointSize=bridge->totalJointSize-bridge->fixedJointSize;
     int hintSize=TYPE_HINT_COST_SIZE(bridge->memberSize);
     int queueSize1=hintSize+freeJointSize;
 
+    printf("test!\n");
     queue_init(&f->queue,queueSize1,queueSize2,queueSize3);
     table_init(&f->table,freeJointSize,TABLE_SIZE,tableLimit);
+    printf("test!\n");
 
     gpointer task=g_malloc(queueSize1);
+    f->min=task;
     //set typeHint
     memcpy(task,&bridge->typeHint,hintSize);
     //set positionHint
     memset(task+hintSize,0,freeJointSize);
 
     queue_insert(&f->queue,task);
+    queue_print(&f->queue);
+    printf("test1!\n");
 
-    free(task);
-    
     return f;
 }
 #define UPDATE_TASK(value, b2, tmp, tmp2, manager, hintSize) \
         *tmp2=b2; \
         value=table_peek(&manager->table,tmp+hintSize); \
         if(value==EMPTY_VALUE){ \
+            printf("inserting %d\n",t);\
             queue_insert(&manager->queue,tmp); \
+            printf("inserted  %d\n",t);\
+        }else{\
         }
 
 int manager_update(Manager *manager,gconstpointer task,int taskSize){
     int freeJointSize=manager->bridge->totalJointSize-manager->bridge->fixedJointSize;
-    int t;
     int hintSize=TYPE_HINT_COST_SIZE(manager->bridge->memberSize);
+    int t;
     int tt;
     int count=0;
+    Dollar value;
     for(tt=0;tt<taskSize;tt++){
-        Double value=table_insert(&manager->table,task+hintSize,*(Dollar*)task);
+        value=*(Dollar*)task;
+        if(value==EMPTY_VALUE){
+            continue;
+        }
+        if(value<*(Dollar*)(manager->min)){
+            memcpy(manager->min,task,hintSize+freeJointSize);
+        }
+        value=table_insert(&manager->table,task+hintSize,value);
         if(value!=EMPTY_VALUE){
             g_assert(value==*(Dollar*)task);
             continue;
         }
+        value=*(Dollar*)task;
+        printf("update adding seed!\n");
         
         gpointer tmp=g_malloc(freeJointSize+hintSize);
-        Byte *tmp2=(Byte*)(tmp+sizeof(Dollar));
+        Byte *tmp2=(Byte*)(tmp+hintSize);
         memcpy(tmp,task,hintSize+freeJointSize);
         for(t=0;t<freeJointSize;t++){
-            Byte b2;
+            printf("seed!\n");
             Byte b=*(tmp2);
+            Byte b2;
             b2=b^((b^(b+1))&15);
             UPDATE_TASK(value,b2,tmp,tmp2,manager,hintSize);
             b2=b^((b^(b-1))&15);
@@ -300,7 +351,9 @@ int manager_update(Manager *manager,gconstpointer task,int taskSize){
             UPDATE_TASK(value,b2,tmp,tmp2,manager,hintSize);
             b2=b^((b^(b-16))&240);
             UPDATE_TASK(value,b2,tmp,tmp2,manager,hintSize);
+            printf("seed!\n");
             *tmp2=b;
+            printf("seed!\n");
 
             tmp2++;
         }
@@ -309,4 +362,27 @@ int manager_update(Manager *manager,gconstpointer task,int taskSize){
     return 0;
 }
 
+void main_work(Manager *manager){
+    printf("start work\n");
+    int freeJointSize=manager->bridge->totalJointSize-manager->bridge->fixedJointSize;
+    int hintSize=TYPE_HINT_COST_SIZE(manager->bridge->memberSize);
+    gpointer task=queue_pull(&manager->queue);
+    gpointer task_=task;
+    OptimizeTask otask;
+    Result* result=(Result*)malloc(sizeof(Result));
+    printf("end cost:%lf\n",*(Dollar*)(task+hintSize+freeJointSize));
+    int count=0;
+    printf("start work\n");
+    while(*(Dollar*)task!=EMPTY_VALUE){
+        printf("in work!\n");
+        int n=analyze(result,&otask,manager->bridge);
+        printf("return: %d\n",n);
+        n=optimize(task, &otask,TRUE);
+        printf("return: %d\n",n);
+        task+=hintSize+freeJointSize;
+        count++;
+    }
+    printf("start work\n");
+    manager_update(manager,task_,count);
+}
 

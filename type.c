@@ -25,7 +25,7 @@ int setupTypes(TypeB* types,const char* buf){
         strcpy(types[t].name,name);
         types[t].weight=DEAD_LOAD_FACTOR*Density*Area*GRAVITY/2000;
         types[t].AE=Area*E;
-        types[t].cost=CostVol*Area*Density*Area*GRAVITY*2;
+        types[t].cost=CostVol*Area*Density*2;
         types[t].tensionStrength=TENSION_RESISTANCE_FACTOR*Fy*Area;
         types[t].inverseRadiusOfGyration=sqrt(Area/Moment);
         types[t].FyArea_d_CEMoment=Fy*Area/(PI2*E*Moment);

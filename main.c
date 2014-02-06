@@ -11,8 +11,9 @@ int test1();
 int test2();
 int test3();
 int test4();
+int test5();
 int main(){
-    test2();
+    test5();
     //printf("%lf\n",-G_MAXDOUBLE);
     return 0;
 }
@@ -48,14 +49,19 @@ int test2(){
     Result* result=(Result*)malloc(sizeof(Result));
     PositionHintB position;
     
-    TypeHintCostB thc;
     OptimizeTask task;
-    memset(&position, 0, sizeof(PositionHintB));
-    memset(&thc, 0, sizeof(TypeHintCostB));
 
-    int n=analyze(result,&task,f,&position,&f->typeHint);
+    int freeJointSize=f->totalJointSize-f->fixedJointSize;
+    int hintSize=TYPE_HINT_COST_SIZE(f->memberSize);
+
+    gpointer element=g_malloc0(hintSize+freeJointSize);
+    TypeHintCostB *thc=(TypeHintCostB*)element;
+
+    memcpy(thc,&f->typeHint,hintSize);
+
+    int n=analyze(result,&task,f,element);
     printf("return: %d\n",n);
-    n=optimize(&thc, &task,TRUE);
+    n=optimize(thc, &task,TRUE);
     
     int t;
     for(t=0;t<33;t++){
@@ -63,18 +69,20 @@ int test2(){
     }
     for(t=0;t<62;t++){
         const TypeB* type=&f->types[f->typeHint.bundle[f->typeHint.member[t]]];
-        const TypeB* type2=&f->types[thc.bundle[thc.member[t]]];
+        const TypeB* type2=&f->types[thc->bundle[thc->member[t]]];
         Double max=result->maxForce[t];
         Double min=-result->minForce[t];
         Double max2=type->tensionStrength;
         Double min2=getCompressionStrength(type,result->memberLength[t]);
-        printf("member %3d:%2d|%2d|%10.2lf|%10.2lf|%10.2lf|%10.2lf|%2.2lf|%2.2lf|%2.3lf|%s|%s\n",t,f->memberLinks[t].j1,f->memberLinks[t].j2,max,min,max2,min2,max/max2,min/min2,result->memberLength[t],type->name,type2->name);
+        printf("member %3d:%2d|%2d|%10.2lf|%10.2lf|%10.2lf|%10.2lf|%2.2lf|%2.2lf|%2.3lf|%5.2lf|%s|%s\n",t,f->memberLinks[t].j1,f->memberLinks[t].j2,max,min,max2,min2,max/max2,min/min2,result->memberLength[t],type2->cost,type->name,type2->name);
     }
     for(t=0;t<10;t++){
         printf("fixed: %d\n",f->fixedIndex[t]);
     }
 
     free((void*)f);
+    free(result);
+    free(element);
     return 0;
 }
 #define KEY(p) (*(Double*)(p))
@@ -124,4 +132,27 @@ int test4(){
         printf("%1.5f,%1.5f,%1.5f\n",tmp1,tmp2,table2[2*t+1]);
     }
     return 0;
+}
+int test5(){
+    const BridgeInfo* f=loadBridge("Eg/2014/test1.bdc");
+    Manager *manager=manager_init(NULL,f,16,4,0.5);
+    int t;
+    main_work(manager);
+    main_work(manager);
+    printf("starting!\n");
+    for(t=0;t<33;t++){
+        //printf("joint %3d:%4d|%4d\n",t,f->positionHint.xy[t*2],f->positionHint.xy[t*2+1]);
+    }
+    TypeHintCostB *thc=(TypeHintCostB*)manager->min;
+    for(t=0;t<62;t++){
+        const TypeB* type=&f->types[f->typeHint.bundle[f->typeHint.member[t]]];
+        const TypeB* type2=&f->types[thc->bundle[thc->member[t]]];
+        printf("member %3d:%2d|%2d|%s|%s\n",t,f->memberLinks[t].j1,f->memberLinks[t].j2,type->name,type2->name);
+    }
+    printf("size: %d,%d\n",manager->queue.size3,manager->table.size2_);
+
+    free((void*)f);
+    printf("finished!\n");
+    return 0;
+
 }

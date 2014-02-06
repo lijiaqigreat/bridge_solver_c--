@@ -55,6 +55,7 @@ typedef struct {
 typedef struct{
     TaskQueue queue;
     CostTable table;
+    gpointer *min;
     const BridgeInfo *bridge;
 } Manager;
 
@@ -62,6 +63,7 @@ TaskQueue *queue_init(TaskQueue *f,int size1,int size2,int size3);
 gchar queue_insert(TaskQueue *queue,gpointer element);
 gpointer queue_pull(TaskQueue *queue);
 void queue_free(TaskQueue *queue);
+void queue_print(TaskQueue *queue);
 
 CostTable *table_init(CostTable *f,int size1,int size2,float limit);
 Dollar table_peek(const CostTable *table,gconstpointer element);

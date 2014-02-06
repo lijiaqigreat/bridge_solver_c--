@@ -20,7 +20,7 @@ guchar* readFile(const gchar* path,Bool encrypt){
     g_io_channel_unref(ch);
     return buf;
 }
-int writeFile(const gchar* path, const guchar* buf){
+int writeFile(const gchar* path, guchar* buf){
     FILE *fp;
     size_t n;
     
@@ -39,7 +39,6 @@ int writeFile(const gchar* path, const guchar* buf){
 
 const BridgeInfo* loadBridge(const gchar* path){
     /* encrypt buffer */
-    printf("test!\n");
     BridgeInfo* f=(BridgeInfo*) malloc(sizeof(BridgeInfo));
     gchar* buf=(gchar*) readFile(path,TRUE);
     printf("decrypted test:\n%s\n",buf);
@@ -65,6 +64,7 @@ const BridgeInfo* loadBridge(const gchar* path){
     f->buf=buf;
     f->totalJointSize=jointSize;
     f->memberSize=memberSize;
+    f->bundleCost=BUNDLE_COST;
     Bool hiPier=code[9]>0;
     int pierPanelIndex=code[8]-1;
     int pierJointIndex=code[8]-1;
@@ -229,5 +229,6 @@ const BridgeInfo* loadBridge(const gchar* path){
         }
     }
     f->baseCost=0;
+    f->typeHint.cost=10000000.;
     return f;
 }

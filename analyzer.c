@@ -3,11 +3,14 @@
 #define CUBE(a) ((a)*(a)*(a))
 #define MATRIX(a,b) matrix[MAX_EQUATION*(a)+(b)]
 
-int analyze(Result* result,OptimizeTask* task,const BridgeInfo *bridgeInfo, const PositionHintB *position, const TypeHintCostB *thc){
+int analyze(Result* result,OptimizeTask* task,const BridgeInfo *bridgeInfo,gconstpointer element){
     //update XY
     Double* XY=(Double*)result->XY;
     Double* matrix=(Double*)result->matrix;
     Double* loads=(Double*)result->loads;
+    int hintSize=TYPE_HINT_COST_SIZE(bridgeInfo->memberSize);
+    const PositionHintB *position=element+hintSize;
+    const TypeHintCostB *thc=(const TypeHintCostB*)element;
     int t1;
     for(t1=0;t1<bridgeInfo->fixedJointSize*2;t1++){
         XY[t1]=bridgeInfo->positionHint.xy[t1]*0.25;
@@ -204,6 +207,7 @@ int analyze(Result* result,OptimizeTask* task,const BridgeInfo *bridgeInfo, cons
     task->memberSize=bridgeInfo->memberSize;
     task->capCost=1000000.;
     task->minLength=0.;
+    task->bundleCost=bridgeInfo->bundleCost;
     return 0;
     
 }

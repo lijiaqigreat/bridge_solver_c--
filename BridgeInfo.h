@@ -48,6 +48,7 @@ typedef struct {
   */
  Int fixedIndex[20];
 
+ //TODO remove?
  Int typeSize;
  /**
   * all avaliable types for this optimization
@@ -76,6 +77,7 @@ typedef struct {
  MemberLink memberLinks[MAX_MEMBER];
  /**
   * all cost except member cost and bundle cost.
+  * TODO remove?
   */
  Dollar baseCost;
 
