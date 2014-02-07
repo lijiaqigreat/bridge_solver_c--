@@ -44,6 +44,7 @@ int manager_update(Manager *manager,gconstpointer task){
         memcpy(manager->min,task,hintSize+freeJointSize);
         printf("new record! %lf\n",value);
     }
+    printf("done %lf\n",value);
     //update table
     value=table_insert(manager->table,task+hintSize,value);
     //table key exist

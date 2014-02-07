@@ -144,6 +144,21 @@ int test5(){
     analyze(&result,&task,f,manager->min);
     result_print(&result,f,manager->min);
 
+    int freeJointSize=manager->bridge->totalJointSize-manager->bridge->fixedJointSize;
+    int hintSize=TYPE_HINT_COST_SIZE(manager->bridge->memberSize);
+
+    gpointer queueTask=g_malloc(freeJointSize+hintSize);
+    //set typeHint
+    memcpy(queueTask,&f->typeHint,hintSize);
+    //set positionHint
+    memset(queueTask+hintSize,0,freeJointSize);
+
+    update_task(&result,&task,queueTask,queueTask,manager,hintSize);
+
+    analyze(&result,&task,f,manager->min);
+    result_print(&result,f,manager->min);
+
+    free(queueTask);
     free(f);
 
     printf("finished!\n");
