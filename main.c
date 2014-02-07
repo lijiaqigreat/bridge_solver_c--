@@ -139,15 +139,19 @@ int test5(){
     analyze(&result,&task,f,&f->typeHint);
     result_print(&result,f,manager->min);
 
-    main_work(manager);
-    printf("queue size: %d\n",manager->queue->size3_);
+    int ttt=0;
+    for(ttt=0;ttt<2;ttt++){
+        main_work(manager);
+        printf("queue size: %d\n",manager->queue->size3_);
+        analyze(&result,&task,f,manager->min);
+        result_print(&result,f,manager->min);
+    }
 
-    analyze(&result,&task,f,manager->min);
-    result_print(&result,f,manager->min);
+    printf("double check!\n");
+
 
     int freeJointSize=manager->bridge->totalJointSize-manager->bridge->fixedJointSize;
     int hintSize=TYPE_HINT_COST_SIZE(manager->bridge->memberSize);
-
     gpointer queueTask=g_malloc(freeJointSize+hintSize);
     //set typeHint
     memcpy(queueTask,&f->typeHint,hintSize);

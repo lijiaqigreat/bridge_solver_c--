@@ -14,7 +14,7 @@
 typedef struct{
     TaskQueue *queue;
     CostTable *table;
-    gpointer *min;
+    gpointer min;
     const BridgeInfo *bridge;
 } Manager;
 

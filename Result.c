@@ -5,6 +5,7 @@ void result_print(const Result* result, const BridgeInfo *bridgeInfo,TypeHintCos
     //print joints
     int jointSize=bridgeInfo->totalJointSize;
     int t1,t2;
+    printf("cost: %lf\n",GET_DOLLAR(thc));
     printf("joints:%d , %d\n",jointSize,bridgeInfo->fixedJointSize);
     printf("i :  x  |  y  \n");
     for(t1=0;t1<jointSize;t1++){
