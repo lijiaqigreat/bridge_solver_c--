@@ -134,11 +134,13 @@ int test5(){
     const BridgeInfo* f=loadBridge("Eg/2014/test2.bdc");
     Result result;
     OptimizeTask task;
-    Manager *manager=manager_init(NULL,f,16,4,0.5);
+    Manager *manager=manager_init(NULL,f,32,16,0.5);
 
     analyze(&result,&task,f,&f->typeHint);
     result_print(&result,f,manager->min);
 
+    main_work(manager);
+    printf("queue size: %d\n",manager->queue->size3_);
     main_work(manager);
 
     analyze(&result,&task,f,manager->min);

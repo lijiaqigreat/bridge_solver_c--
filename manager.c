@@ -35,6 +35,10 @@ Manager *manager_init(Manager *f,const BridgeInfo *bridge,int queueSize2,int que
 }
 
 int manager_update(Manager *manager,gconstpointer task){
+    static GTimer* timer=NULL;
+    if(timer==NULL){
+        timer=g_timer_new();
+    }
     Dollar value=GET_DOLLAR(task);
     //no need to update
     int freeJointSize=manager->bridge->totalJointSize-manager->bridge->fixedJointSize;
@@ -44,7 +48,11 @@ int manager_update(Manager *manager,gconstpointer task){
         memcpy(manager->min,task,hintSize+freeJointSize);
         printf("new record! %lf\n",value);
     }
-    printf("done %lf\n",value);
+    static counter=0;
+    counter++;
+    if(counter%100==0){
+        printf("done %10.4lf,%10.4f\n",value,g_timer_elapsed(timer,NULL));
+    }
     //update table
     value=table_insert(manager->table,task+hintSize,value);
     //table key exist

@@ -56,8 +56,54 @@ int optimize(TypeHintCostB* f,const OptimizeTask* task){
         count[t]=0;
     }
     while(level>-1){
-        //TODO don't check when just decreased level?
-       
+        //too many bundle
+        if(level>=MAX_BUNDLE){
+            count[4]++;
+            --level;
+            continue;
+        }
+
+        //tested all types
+        if(bundle[level+1]==task->typeSize-1){
+            count[5]++;
+            --level;
+            continue;
+        }
+        ++level;
+        ++bundle[level];
+        TestMask valid=bundleRemain[level-1]&task->typeTestMask[bundle[level]];
+        if(valid==0){
+            count[6]++;
+            --level;
+            continue;
+        }
+        count[0]++;
+        if(count[0]>=200000){
+            f->cost=task->capCost;
+            break;
+        }
+        bundleLength[level]=bundleLength[level-1];
+        bundleCost[level]=bundleCost[level-1]+task->bundleCost;
+        bundleMinCost[level]=bundleMinCost[level-1];
+        bundleRemain[level]=bundleRemain[level-1]^valid;
+        if(level<MAX_BUNDLE){
+            bundle[level+1]=bundle[level]+1;
+        }
+        //TODO optimize performance, take advantage of bitset.
+        while(valid!=0){
+            int tt=FFSLL(valid)-1;
+            bundleLength[level] -= task->length[tt];
+            bundleCost[level] +=task->cost[bundle[level]]*task->length[tt];
+            bundleMinCost[level]-=task->cost[memberMinIndex[tt]]*task->length[tt];
+            valid^=1L<<tt;
+        }
+        //stop when cost too large
+        if(bundleCost[level] + bundleMinCost[level] > f->cost){
+            count[2]++;
+            --level;
+            continue;
+        }
+
         //finished?
         if(bundleRemain[level]==0){
             count[1]++;
@@ -83,56 +129,13 @@ int optimize(TypeHintCostB* f,const OptimizeTask* task){
             level-=2;
             continue;
         }
-        //stop when cost too large
-        if(bundleCost[level] + bundleMinCost[level] > f->cost){
-            count[2]++;
-            --level;
-            continue;
-        }
         //stop when bundle total length too small
         if(level>0 && (bundleLength[level-1] - bundleLength[level] <task->minLength)){
             count[3]++;
             --level;
             continue;
         }
-        //too many bundle
-        if(level>=MAX_BUNDLE){
-            count[4]++;
-            --level;
-            continue;
-        }
-        
-        //tested all types
-        if(bundle[level+1]==task->typeSize-1){
-            count[5]++;
-            --level;
-            continue;
-        }
-        
-        ++level;
-        ++bundle[level];
-        TestMask valid=bundleRemain[level-1]&task->typeTestMask[bundle[level]];
-        if(valid==0){
-            count[6]++;
-            --level;
-            continue;
-        }
-        count[0]++;
-        bundleLength[level]=bundleLength[level-1];
-        bundleCost[level]=bundleCost[level-1]+task->bundleCost;
-        bundleMinCost[level]=bundleMinCost[level-1];
-        bundleRemain[level]=bundleRemain[level-1]^valid;
-        if(level<MAX_BUNDLE){
-            bundle[level+1]=bundle[level]+1;
-        }
-        //TODO optimize performance, take advantage of bitset.
-        while(valid!=0){
-            int tt=FFSLL(valid)-1;
-            bundleLength[level] -= task->length[tt];
-            bundleCost[level] +=task->cost[bundle[level]]*task->length[tt];
-            bundleMinCost[level]-=task->cost[memberMinIndex[tt]]*task->length[tt];
-            valid^=1L<<tt;
-        }
     }
+    //printf("optimizer: %d\n",count[0]);
     return 0;
 }
