@@ -1,7 +1,7 @@
 #ifndef BASE_TYPE_H 
 #define BASE_TYPE_H 
 
-#define FFSLL __builtin_ffsll
+//specs
 #define MAX_DECK_TYPE 4
 #define MAX_TRUCK_TYPE 4
 #define MAX_BUNDLE 8
@@ -10,14 +10,15 @@
 #define MAX_FIXED_JOINT 20
 #define MAX_JOINT 50
 #define MAX_EQUATION (MAX_JOINT*2)
-#define SQR(a) ((a)*(a))
 #define MAX_LOAD 12
 
+//type size
 #define SIZE_SIZE 33
 #define MATERIAL_SIZE 3
 #define SHAPE_SIZE 2
 #define MAX_TYPE 196
 
+//physical constants
 #define GRAVITY 9.8066
 #define DEAD_LOAD_FACTOR 1.25
 #define LIVE_LOAD_FACTOR 2.3275
@@ -29,16 +30,25 @@
 #define DEADLOADFACTOR 1.25
 #define LIVELOADFACTOR 2.3275
 
+//defaults for data structure
 #define EMPTY_VALUE -1.
 #define INVALID_VALUE 10000000.
+
+//quick hands
+#define FFSLL __builtin_ffsll
 #define GET_BYTE(p) (*(const guchar*)(p))
 #define GET_DOLLAR(p) (*(Dollar*)(p))
+#define SQR(a) ((a)*(a))
 
 //TODO double check max_load
 #include <stdio.h>
 #include <glib.h>
 #include <stdlib.h>
 #include <string.h>
+
+/**************//**
+ * basic types
+ *****************/
 
 //gboolean
 typedef gboolean Bool;
@@ -61,8 +71,13 @@ typedef Double Dollar;
 typedef int Int;
 /**
  * nth bit is 1 if member n pass the type
+ * TODO ensure size on various application
  */
 typedef __uint128_t TestMask;
+
+/**************//**
+ * small structs
+ *****************/
 
 /**
  * each byte is divided into 2 parts, each 4 bit is
@@ -105,42 +120,43 @@ typedef struct {
  * WARNING: positionHintB is not contained
  */
 typedef struct {
- 
- //postionHint sensitive
-
- /**
-  * testMask for each type worth considering
-  */
- TestMask typeTestMask[MAX_TYPE];
- /**
-  * length of each member
-  */
- Double length[MAX_MEMBER];
- /**
-  * cost of each type
-  * unit: Dollar/meter
-  */
- Dollar cost[MAX_TYPE];
- /**
-  * actual global index of each type
-  */
- Byte index[MAX_TYPE];
- /**
-  * number of types worth considering
-  */
- Int typeSize;
- Int memberSize;
- /**
-  * used to speed up optimization
-  * TODO test speed difference, might not be significant.
-  */
- Dollar capCost;
-
- //bridgeInfo sensitive
-
- Dollar bundleCost;
- Double minLength;
+    
+    //postionHint sensitive
+   
+    /**
+     * testMask for each type worth considering
+     */
+    TestMask typeTestMask[MAX_TYPE];
+    /**
+     * length of each member
+     */
+    Double length[MAX_MEMBER];
+    /**
+     * cost of each type
+     * unit: Dollar/meter
+     */
+    Dollar cost[MAX_TYPE];
+    /**
+     * actual global index of each type
+     */
+    Byte index[MAX_TYPE];
+    /**
+     * number of types worth considering
+     */
+    Int typeSize;
+    Int memberSize;
+    /**
+     * used to speed up optimization
+     * TODO test speed difference, might not be significant.
+     */
+    Dollar capCost;
+   
+    //bridgeInfo sensitive
+   
+    Dollar bundleCost;
+    Double minLength;
 } OptimizeTask;
+
 /**
  * store the connection configuration of a member.
  * j1,j2 is the 
@@ -161,6 +177,7 @@ typedef enum {
  OPTIMIZED_MAX_BUNDLE,
  OPTIMIZED_MAX_COST
 } Status;
+
 
 char* print_bytes(gconstpointer p,int size);
 

@@ -141,7 +141,6 @@ int test5(){
 
     main_work(manager);
     printf("queue size: %d\n",manager->queue->size3_);
-    main_work(manager);
 
     analyze(&result,&task,f,manager->min);
     result_print(&result,f,manager->min);

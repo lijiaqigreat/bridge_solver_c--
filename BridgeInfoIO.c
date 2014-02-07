@@ -1,13 +1,14 @@
 
 #include "BridgeInfoIO.h"
 #include "rc4.h"
+#include <string.h>
 #include <glib/giochannel.h>
 
 guchar* readFile(const gchar* path,Bool encrypt){
     GIOChannel *ch=g_io_channel_new_file(path,"r",NULL);
     g_io_channel_set_encoding(ch,NULL,NULL);
     if (!ch) {
-        fprintf(stderr, "can't open input file\n");
+        fprintf(stderr, "can't open input file: %s\n",path);
         return 0;
     }
     guchar *buf=NULL;
@@ -20,20 +21,30 @@ guchar* readFile(const gchar* path,Bool encrypt){
     g_io_channel_unref(ch);
     return buf;
 }
-int writeFile(const gchar* path, guchar* buf){
-    FILE *fp;
-    size_t n;
-    
-
-    fp = fopen(path, "wb");
-    if (!fp) {
-        fprintf(stderr, "can't open output file\n");
+int writeFile(const gchar* path, const guchar* buf,Bool encrypt){
+    GIOChannel *ch=g_io_channel_new_file(path,"w",NULL);
+    g_io_channel_set_encoding(ch,NULL,NULL);
+    if (!ch) {
+        fprintf(stderr, "can't write to file: %s\n",path);
         return 1;
     }
-    n = strlen((char*)buf);
-    endecrypt_rc4(buf,n);
-    fwrite(buf, 1, n, fp);
-    fclose(fp);
+    //TODO better performance by storing length somewhere?
+    GError *error=NULL;
+    gsize size=strlen(buf);
+    if(encrypt){
+        guchar *buf2=strndup(buf,size);
+        endecrypt_rc4(buf2,(int)size);
+        g_io_channel_write_chars(ch,buf2,size,NULL,&error);
+        free(buf2);
+    }else{
+        g_io_channel_write_chars(ch,buf,size,NULL,&error);
+    }
+    if(error!=NULL){
+        fprintf(stderr, "%s\n",error->message);
+        g_error_free(error);
+        return 2;
+    }
+    g_io_channel_unref(ch);
     return 0;
 }
 
@@ -232,3 +243,25 @@ const BridgeInfo* loadBridge(const gchar* path){
     f->typeHint.cost=10000000.;
     return f;
 }
+
+const BridgeInfo* rebaseBridge(const BridgeInfo* bridgeInfo,gpointer thc_ph){
+    BridgeInfo* f=g_memdup(bridgeInfo,sizeof(BridgeInfo));
+    //move joint
+    PositionHintB *position=(PositionHintB*)(thc_ph+TYPE_HINT_COST_SIZE(f->memberSize));
+    int t1;
+    for(t1=f->fixedJointSize;t1<f->totalJointSize;++t1){
+        int t2=t1-f->fixedJointSize;
+        f->positionHint.xy[t1*2  ]+=(((position->joints[t2]>>4)&15)^8-8)/4.;
+        f->positionHint.xy[t1*2+1]+=(((position->joints[t2]   )&15)^8-8)/4.;
+    }
+
+    //change typeHint
+    memcpy(&f->typeHint,thc_ph,TYPE_HINT_COST_SIZE(f->memberSize));
+    
+    //TODO write f->buf
+
+    return f;
+
+
+}
+

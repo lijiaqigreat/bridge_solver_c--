@@ -11,3 +11,7 @@
 
 
 const BridgeInfo* loadBridge(const char* path);
+
+void saveBridge(const char* path,const BridgeInfo* bridge);
+
+const BridgeInfo* rebaseBridge(const BridgeInfo* bridge,gpointer thc_ph);
