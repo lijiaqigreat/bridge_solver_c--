@@ -2,6 +2,8 @@
 #include "Result.h"
 #include "analyzer.h"
 #include "optimizer.h"
+#include "queue.h"
+#include "table.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -28,8 +30,11 @@ Manager *manager_init(Manager *f,const BridgeInfo *bridge,int queueSize2,int que
     memcpy(task,&bridge->typeHint,hintSize);
     //set positionHint
     memset(task+hintSize,0,freeJointSize);
-
-    queue_insert(f->queue,task);
+    Result result;
+    OptimizeTask otask;
+    printf("initializing manager\n");
+    update_task(&result,&otask,task,task,f,hintSize);
+    printf("initialized manager\n");
 
     return f;
 }
@@ -94,7 +99,9 @@ void update_task(Result *result,OptimizeTask *otask,gpointer task,gpointer tmp1,
     if(value==EMPTY_VALUE){
         memcpy(tmp1,task,hintSize);
         int n=analyze(result,otask,manager->bridge,tmp1);
+        printf("test n:%d\n",n);
         n=optimize(tmp1, otask);
+        printf("test n:%d\n",n);
         manager_update(manager,tmp1);
         //queue_insert(manager->queue,tmp);
     }

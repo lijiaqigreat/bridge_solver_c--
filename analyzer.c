@@ -57,6 +57,7 @@ int analyze(Result* result,OptimizeTask* task,const BridgeInfo *bridgeInfo,gcons
         result->memberLength[t1]=length;
 
         if(length==0.){
+            printf("ERROR: length 0!\n");
             return -1;
         }
         //add member weight
@@ -103,6 +104,7 @@ int analyze(Result* result,OptimizeTask* task,const BridgeInfo *bridgeInfo,gcons
         Double pivot = MATRIX(t1,t1);
         if (-0.99 < pivot && pivot < 0.99) {
             //TODO
+            printf("ERROR: unstable!\n");
             return 2;
         }
         int k;
@@ -205,7 +207,7 @@ int analyze(Result* result,OptimizeTask* task,const BridgeInfo *bridgeInfo,gcons
     }
     task->typeSize=typeIndex;
     task->memberSize=bridgeInfo->memberSize;
-    task->capCost=1000000.;
+    task->capCost=1000001.;
     task->minLength=0.;
     task->bundleCost=bridgeInfo->bundleCost;
     return 0;

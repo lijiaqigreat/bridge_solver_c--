@@ -7,7 +7,7 @@
  *  cost: sizeof(Dollar)
  *  positionHintB: size1-sizeof(Dollar)
  */
-typedef struct {
+typedef struct _TaskQueue{
     /**
      * size of each element
      */

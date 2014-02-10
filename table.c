@@ -45,7 +45,7 @@ Dollar table_peek(const CostTable *table,gconstpointer element){
             }
         }
     }
-    return EMPTY_VALUE;
+    return -1.;
 }
 
 //insert without expanding

@@ -1,6 +1,8 @@
 
 #include "optimizer.h"
+#define eprintf(...) printf(__VA_ARGS__)
 
+static char spacebuf[]="          ";
 int optimize(TypeHintCostB* f,const OptimizeTask* task){
     //used as final return
     //index of type with minCost for given member
@@ -97,6 +99,7 @@ int optimize(TypeHintCostB* f,const OptimizeTask* task){
             bundleMinCost[level]-=task->cost[memberMinIndex[tt]]*task->length[tt];
             valid^=1L<<tt;
         }
+        //eprintf("%s%d:%5lf|%5lf|%5lf|%5lf|%s",spacebuf+(10-level),level,bundleLength[level],bundleCost[level],bundleMinCost[level],print_bytes(&bundleRemain[level],8));
         //stop when cost too large
         if(bundleCost[level] + bundleMinCost[level] > f->cost){
             count[2]++;

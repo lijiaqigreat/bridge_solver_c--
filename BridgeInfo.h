@@ -8,7 +8,7 @@
  * to be converted from .bdc
  * IMPORTANT should be fixed once loaded
  */
-typedef struct {
+typedef struct _BridgeInfo{
  const char* buf;
  
  //Condition

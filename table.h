@@ -12,7 +12,7 @@
  *  positionHintB: freeJointSize
  *  cost: sizeof(Dollar)
  */
-typedef struct {
+typedef struct _CostTable{
     int size1;
     int size2;
     int size2_;

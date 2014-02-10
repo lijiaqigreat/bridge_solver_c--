@@ -8,6 +8,9 @@
 
 #define BUFLEN 100000
 #define TYPE_PATH "sample2.txt"
+#define BUF_OFFSET_JOINT 19
+#define BUF_LEN_JOINT 6
+#define BUF_LEN_MEMBER 8
 
 
 const BridgeInfo* loadBridge(const char* path);

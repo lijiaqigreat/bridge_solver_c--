@@ -16,7 +16,7 @@
 #define SIZE_SIZE 33
 #define MATERIAL_SIZE 3
 #define SHAPE_SIZE 2
-#define MAX_TYPE 196
+#define MAX_TYPE 198
 
 //physical constants
 #define GRAVITY 9.8066
@@ -177,6 +177,15 @@ typedef enum {
  OPTIMIZED_MAX_BUNDLE,
  OPTIMIZED_MAX_COST
 } Status;
+
+/**************//**
+ * big class
+ *****************/
+struct _BridgeInfo;
+struct _Manager;
+struct _Result;
+struct _TaskQueue;
+struct _CostTable;
 
 
 char* print_bytes(gconstpointer p,int size);

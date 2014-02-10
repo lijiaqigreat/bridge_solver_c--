@@ -4,7 +4,7 @@
 #include "base_type.h"
 #include "BridgeInfo.h"
 
-typedef struct {
+typedef struct _Result{
  /**
   * coordinate of all joints
   */
@@ -38,6 +38,6 @@ typedef struct {
  Dollar totalCost;
  Status status;
 } Result;
-void result_print(const Result* result, const BridgeInfo *bridgeInfo,TypeHintCostB *thc);
+void result_print(const Result* result, const struct _BridgeInfo *bridgeInfo,TypeHintCostB *thc);
 
 #endif

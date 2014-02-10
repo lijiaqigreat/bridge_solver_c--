@@ -8,13 +8,12 @@ guchar* readFile(const gchar* path,Bool encrypt){
     GIOChannel *ch=g_io_channel_new_file(path,"r",NULL);
     g_io_channel_set_encoding(ch,NULL,NULL);
     if (!ch) {
-        fprintf(stderr, "can't open input file: %s\n",path);
+        fprintf(stderr, "ERROR: can't open input file: %s\n",path);
         return 0;
     }
     guchar *buf=NULL;
     gsize size;
     g_io_channel_read_to_end(ch,(gchar**)&buf,&size,0);
-    printf("%d,%d,%d\n",(int)size,0,0);
     if(encrypt){
         endecrypt_rc4(buf,(int)size);
     }
@@ -40,7 +39,7 @@ int writeFile(const gchar* path, const guchar* buf,Bool encrypt){
         g_io_channel_write_chars(ch,buf,size,NULL,&error);
     }
     if(error!=NULL){
-        fprintf(stderr, "%s\n",error->message);
+        fprintf(stderr, "ERROR: %s\n",error->message);
         g_error_free(error);
         return 2;
     }
@@ -48,10 +47,20 @@ int writeFile(const gchar* path, const guchar* buf,Bool encrypt){
     return 0;
 }
 
+int findIndex(const TypeB *types,int index){
+    int t;
+    for(t=0;t<MAX_TYPE;t++){
+        if(types[t].index==index){
+            return t;
+        }
+    }
+    return -1;
+}
 const BridgeInfo* loadBridge(const gchar* path){
     /* encrypt buffer */
     BridgeInfo* f=(BridgeInfo*) malloc(sizeof(BridgeInfo));
     gchar* buf=(gchar*) readFile(path,TRUE);
+    f->buf=buf;
     printf("decrypted test:\n%s\n",buf);
     int year;
     int jointSize;
@@ -64,7 +73,6 @@ const BridgeInfo* loadBridge(const gchar* path){
         sscanf(jss,"%d",&jointSize);
         sscanf(mss,"%d",&memberSize);
     }
-    buf+=19;
     int t;
     for(t=0;t<10;t++){
         code[9-t]=conditionID%10;
@@ -72,7 +80,6 @@ const BridgeInfo* loadBridge(const gchar* path){
     }
     char* buf2=(char*) readFile(TYPE_PATH,FALSE);
     setupTypes((TypeB*)(&f->types[0]),buf2);
-    f->buf=buf;
     f->totalJointSize=jointSize;
     f->memberSize=memberSize;
     f->bundleCost=BUNDLE_COST;
@@ -182,13 +189,14 @@ const BridgeInfo* loadBridge(const gchar* path){
         }
         f->fixedIndex[tt]=-1;
     }
+    buf+=BUF_OFFSET_JOINT;
     for(t=0;t<jointSize;t++){
         Int x,y;
         char xs[4],ys[4];
         sscanf(buf,"%3[- 0-9]%3[- 0-9]",xs,ys);
         sscanf(xs,"%d",&x);
         sscanf(ys,"%d",&y);
-        buf+=6;
+        buf+=BUF_LEN_JOINT;
         f->positionHint.xy[t*2]=x;
         f->positionHint.xy[t*2+1]=y;
     }
@@ -210,26 +218,25 @@ const BridgeInfo* loadBridge(const gchar* path){
             sscanf(j1s,"%d",&j1);
             sscanf(j2s,"%d",&j2);
             sscanf(i3s,"%d",&i3);
-            buf+=8;
+            buf+=BUF_LEN_MEMBER;
             f->memberLinks[t].j1=j1-1;
             f->memberLinks[t].j2=j2-1;
-            index=MATERIAL_SHIFT*i1+SHAPE_SHIFT*i2+SIZE_SHIFT*i3;
+            index=GET_TYPE_INDEX(i1,i2,i3);
             for(ttt=0;ttt<bundleSize&&bundle[ttt]!=index;ttt++){}
             if(ttt==bundleSize){
                 if(bundleSize==MAX_BUNDLE){
                     //exceed max bundle
-                    printf("!!!\n");
+                    printf("ERROR: max bundle!\n");
                     return 0;
                 }
                 
                 bundle[bundleSize]=(Byte)index;
-                printf("test: %d %d %s\n",bundleSize,index,f->types[index].name);
+                printf("new bundle: %d %d %s\n",bundleSize,index,f->types[index].name);
                 bundleSize++;
             }
             memberi[t]=ttt;
         }
         for(t=0;t<bundleSize;t++){
-            //TODO update f->typeHint.bundle
             int tt;
             for(tt=0;tt<MAX_TYPE;++tt){
                 if(f->types[tt].index==bundle[t]){
@@ -246,22 +253,35 @@ const BridgeInfo* loadBridge(const gchar* path){
 
 const BridgeInfo* rebaseBridge(const BridgeInfo* bridgeInfo,gpointer thc_ph){
     BridgeInfo* f=g_memdup(bridgeInfo,sizeof(BridgeInfo));
+    f->buf=strdup(f->buf);
+    gchar *buf2=f->buf+BUF_OFFSET_JOINT+f->fixedJointSize*BUF_LEN_JOINT;
     //move joint
     PositionHintB *position=(PositionHintB*)(thc_ph+TYPE_HINT_COST_SIZE(f->memberSize));
     int t1;
     for(t1=f->fixedJointSize;t1<f->totalJointSize;++t1){
         int t2=t1-f->fixedJointSize;
-        f->positionHint.xy[t1*2  ]+=(((position->joints[t2]>>4)&15)^8-8)/4.;
-        f->positionHint.xy[t1*2+1]+=(((position->joints[t2]   )&15)^8-8)/4.;
+        f->positionHint.xy[t1*2  ]+=(((position->joints[t2]>>4)&15)^8-8);
+        f->positionHint.xy[t1*2+1]+=(((position->joints[t2]   )&15)^8-8);
+        sprintf(buf2,"%3d%3d",f->positionHint.xy[t1*2  ],f->positionHint.xy[t1*2+1]);
+        buf2+=BUF_LEN_JOINT;
     }
 
     //change typeHint
     memcpy(&f->typeHint,thc_ph,TYPE_HINT_COST_SIZE(f->memberSize));
     
-    //TODO write f->buf
-
+    char end=*(buf2+BUF_LEN_MEMBER*f->memberSize);
+    for(t1=0;t1<f->memberSize;t1++){
+        int i=f->types[f->typeHint.bundle[f->typeHint.member[t1]]].index;
+        int i1,i2,i3;
+        SET_TYPE_INDEX(i,i1,i2,i3);
+        sprintf(buf2,"%2d%2d%1d%1d%2d",f->memberLinks[t1].j1+1,f->memberLinks[t1].j2+1,i1,i2,i3);
+        buf2+=BUF_LEN_MEMBER;
+    }
+    *buf2=end;
+    //TODO write report?
     return f;
-
-
 }
 
+void saveBridge(const char* path,const BridgeInfo *bridgeInfo){
+    writeFile(path,bridgeInfo->buf,TRUE);
+}

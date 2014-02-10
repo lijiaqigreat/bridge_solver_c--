@@ -23,6 +23,9 @@ gchar queue_insert(TaskQueue *queue,gconstpointer element){
     while(queue->interval[++t]<key){}
     //not split?
     if(queue->dataSize[t]<queue->size2){
+        queue_print(queue);
+        memcpy(queue->data[t]+(queue->dataSize[t]++)*queue->size1,queue->data[t]+(queue->dataSize[t]++)*queue->size1,queue->size1);
+        memcpy(element,element,queue->size1);
         memcpy(queue->data[t]+(queue->dataSize[t]++)*queue->size1,element,queue->size1);
         //no split
         return 0;
@@ -136,7 +139,7 @@ void queue_print(TaskQueue *queue){
         printf("block:%3d, size:%5d, interval: %5.3lf\n",t,size,a);
         int t2;
         for(t2=0;t2<size;t2++){
-            printf("%5.3lf:%s\n",GET_DOLLAR(queue->data[t]+queue->size1*t2),print_bytes(queue->data[t]+queue->size1*t2+sizeof(Dollar),queue->size1-sizeof(Dollar)));
+            printf("%10.3lf:%s\n",GET_DOLLAR(queue->data[t]+queue->size1*t2),print_bytes(queue->data[t]+queue->size1*t2+sizeof(Dollar),queue->size1-sizeof(Dollar)));
         }
     }
     printf("--- end queue ---\n");

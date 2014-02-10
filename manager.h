@@ -1,27 +1,23 @@
 #ifndef MANAGER_H
 #define MANAGER_H
 #include "base_type.h"
-#include "queue.h"
-#include "table.h"
-#include "BridgeInfo.h"
-#include "Result.h"
 
 #define TABLE_SIZE 128
 
 /**
  * Serve as central unit of the whole program
  */
-typedef struct{
-    TaskQueue *queue;
-    CostTable *table;
+typedef struct _Manager{
+    struct _TaskQueue *queue;
+    struct _CostTable *table;
     gpointer min;
-    const BridgeInfo *bridge;
+    const struct _BridgeInfo *bridge;
 } Manager;
 
-Manager *manager_init(Manager *manager,const BridgeInfo *bridge,int queueSize2,int queueSize3,float tableLimit);
+Manager *manager_init(Manager *manager,const struct _BridgeInfo *bridge,int queueSize2,int queueSize3,float tableLimit);
 
 //TODO yet to be implemented
-void manager_rebase(Manager * manager,const BridgeInfo *bridge);
+void manager_rebase(Manager * manager,const struct _BridgeInfo *bridge);
 
 /**
  * TODO make queue only store task before expanding to save memory
@@ -33,7 +29,7 @@ void manager_rebase(Manager * manager,const BridgeInfo *bridge);
  */
 int manager_update(Manager *manager,gconstpointer task);
 
-void update_task(Result *result,OptimizeTask *otask,gpointer task,gpointer tmp1, Manager *manager,int hintSize);
+void update_task(struct _Result *result,OptimizeTask *otask,gpointer task,gpointer tmp1, Manager *manager,int hintSize);
 
 /**
  * main thread function

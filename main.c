@@ -6,15 +6,18 @@
 #include <math.h>
 #include <glib.h>
 #include "manager.h"
+#include "queue.h"
+#include "table.h"
 typedef __uint128_t BigInt;
 int test1();
 int test2();
 int test3();
 int test4();
 int test5();
+int test6();
+#define eprintf(...) printf(__VA_ARGS__)
 int main(){
-    test5();
-    //printf("%lf\n",-G_MAXDOUBLE);
+    test3();
     return 0;
 }
 
@@ -131,16 +134,20 @@ int test4(){
     return 0;
 }
 int test5(){
-    const BridgeInfo* f=loadBridge("Eg/2014/test2.bdc");
+    const BridgeInfo* f=loadBridge("Eg/2014/test3.bdc");
     Result result;
     OptimizeTask task;
+    if(f==NULL){
+        printf("no bridge!!\n");
+        return 1;
+    }
     Manager *manager=manager_init(NULL,f,32,16,0.5);
 
     analyze(&result,&task,f,&f->typeHint);
     result_print(&result,f,manager->min);
 
     int ttt=0;
-    for(ttt=0;ttt<2;ttt++){
+    for(ttt=0;ttt<5;ttt++){
         main_work(manager);
         printf("queue size: %d\n",manager->queue->size3_);
         analyze(&result,&task,f,manager->min);
@@ -163,10 +170,30 @@ int test5(){
     analyze(&result,&task,f,manager->min);
     result_print(&result,f,manager->min);
 
+    const BridgeInfo* f2=rebaseBridge(f,manager->min);
+    saveBridge("Eg/2014/test/test3.bdc",f2);
+
+
     free(queueTask);
     free(f);
+    free(f2);
 
     printf("finished!\n");
     return 0;
 
+}
+int test6(){
+    const BridgeInfo* f=loadBridge("Eg/2014/test2.bdc");
+    int freeJointSize=f->totalJointSize-f->fixedJointSize;
+    int hintSize=TYPE_HINT_COST_SIZE(f->memberSize);
+    gpointer queueTask=g_malloc(freeJointSize+hintSize);
+    //set typeHint
+    memcpy(queueTask,&f->typeHint,hintSize);
+    //set positionHint
+    memset(queueTask+hintSize,0,freeJointSize);
+    const BridgeInfo* f2=rebaseBridge(f,queueTask);
+    printf("new bridge:\n%s\n",f2->buf);
+
+    saveBridge("Eg/2014/test/test2.bdc",f2);
+    return 0;
 }

@@ -4,11 +4,14 @@
 #define MATERIAL_SHIFT 1
 #define SHAPE_SHIFT 99
 #define SIZE_SHIFT 3
+#define GET_TYPE_INDEX(i1,i2,i3) ((i1)+(i2)*99+(i3)*3)
+#define SET_TYPE_INDEX(i,i1,i2,i3) i1=(i)%3;i2=(i)/99;i3=((i)/3)%33
 
 /**
  * TODO more comment
  */
 typedef struct {
+//original index
  Byte index;
  Byte index2;
 
