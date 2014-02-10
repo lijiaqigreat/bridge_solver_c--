@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-c -g -pg -Wall `pkg-config --cflags glib-2.0`
+CFLAGS=-c -g -pg -Wall -O0 `pkg-config --cflags glib-2.0`
 LIBS=-L/usr/lib -lm -lglib-2.0
 
 all: bridge_solver

@@ -55,7 +55,7 @@ int manager_update(Manager *manager,gconstpointer task){
     }
     static counter=0;
     counter++;
-    if(counter%100==0){
+    if(counter%10000==0){
         printf("done %10.4lf,%10.4f\n",value,g_timer_elapsed(timer,NULL));
     }
     //update table
@@ -99,9 +99,9 @@ void update_task(Result *result,OptimizeTask *otask,gpointer task,gpointer tmp1,
     if(value==EMPTY_VALUE){
         memcpy(tmp1,task,hintSize);
         int n=analyze(result,otask,manager->bridge,tmp1);
-        printf("test n:%d\n",n);
+        //printf("test n:%d\n",n);
         n=optimize(tmp1, otask);
-        printf("test n:%d\n",n);
+        //printf("test n:%d\n",n);
         manager_update(manager,tmp1);
         //queue_insert(manager->queue,tmp);
     }

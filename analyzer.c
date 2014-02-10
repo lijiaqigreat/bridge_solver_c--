@@ -17,8 +17,8 @@ int analyze(Result* result,OptimizeTask* task,const BridgeInfo *bridgeInfo,gcons
     }
     for(t1=bridgeInfo->fixedJointSize;t1<bridgeInfo->totalJointSize;++t1){
         int t2=t1-bridgeInfo->fixedJointSize;
-        XY[t1*2  ]=(bridgeInfo->positionHint.xy[t1*2  ]+((position->joints[t2]>>4)&15)^8-8)/4.;
-        XY[t1*2+1]=(bridgeInfo->positionHint.xy[t1*2+1]+((position->joints[t2]   )&15)^8-8)/4.;
+        XY[t1*2  ]=(bridgeInfo->positionHint.xy[t1*2  ]+(((position->joints[t2]>>4)&15)^8)-8)/4.;
+        XY[t1*2+1]=(bridgeInfo->positionHint.xy[t1*2+1]+(((position->joints[t2]   )&15)^8)-8)/4.;
     }
    
     int equationSize=bridgeInfo->totalJointSize*2;

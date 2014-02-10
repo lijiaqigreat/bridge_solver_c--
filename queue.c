@@ -20,15 +20,18 @@ TaskQueue *queue_init(TaskQueue *f,int size1,int size2,int size3){
 gchar queue_insert(TaskQueue *queue,gconstpointer element){
     Double key=*(Double*) element;
     int t=-1;
+    int ret=0;
     while(queue->interval[++t]<key){}
     //not split?
     if(queue->dataSize[t]<queue->size2){
         //queue_print(queue);
-        memcpy(queue->data[t]+(queue->dataSize[t])*queue->size1,queue->data[t]+(queue->dataSize[t])*queue->size1,queue->size1);
-        memcpy(element,element,queue->size1);
-        memcpy(queue->data[t]+(queue->dataSize[t]++)*queue->size1,element,queue->size1);
+        void* tmp=malloc(queue->size1);
+        memcpy(tmp,element,queue->size1);
+        memcpy(queue->data[t]+(queue->dataSize[t])*queue->size1,tmp,queue->size1);
+        memcpy(queue->data[t]+(queue->dataSize[t])*queue->size1,element,queue->size1);
+        queue->dataSize[t]++;
         //no split
-        return 0;
+        ret=0;
     }else{
         gpointer block=queue->data[t];
         memcpy(block+queue->size2*queue->size1,element,queue->size1);
@@ -47,6 +50,7 @@ gchar queue_insert(TaskQueue *queue,gconstpointer element){
         //copy splited data
         if(t!=queue->size3-1){
             int newSize=queue->size2/2+1;
+            queue->data[t+1]=NULL;
             queue->data[t+1]=(gpointer)g_malloc(queue->size1*(queue->size2+1));
             queue->dataSize[t+1]=newSize;
             memcpy(queue->data[t+1],block+((queue->size2+1)/2)*queue->size1,newSize*queue->size1);
@@ -58,16 +62,18 @@ gchar queue_insert(TaskQueue *queue,gconstpointer element){
                 g_free(queue->data[queue->size3]);
                 queue->interval[queue->size3-1]=G_MAXDOUBLE;
                 //split and remove tail
-                return 3;
+                ret=3;
+            }else{
+                //split without remove tail
+                ret=2;
             }
-            //split without remove tail
-            return 2;
         }else{
             queue->size3_--;
             //split tailing block
-            return 1;
+            ret=1;
         }
     }
+    return ret;
 }
 gpointer queue_pull(TaskQueue *queue){
     g_assert(queue->size3_>0);
@@ -80,6 +86,7 @@ gpointer queue_pull(TaskQueue *queue){
     for(t=0;t<queue->size3_;t++){
         queue->data[t]=queue->data[t+1];
         queue->dataSize[t]=queue->dataSize[t+1];
+        queue->interval[t]=queue->interval[t+1];
     }
     //fill data[0] when size3_==0
     if(queue->size3_==0){

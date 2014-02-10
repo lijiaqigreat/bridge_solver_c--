@@ -54,6 +54,7 @@ Dollar _table_insert(CostTable *table,gconstpointer element,Dollar cost);
 Dollar table_insert(CostTable *table,gconstpointer element,Dollar cost){
     //expand?
     if(table->size2*table->limit<table->size2_+1){
+        printf("table split: %d\n",table->size2);
         int size1=table->size1;
         int size2=table->size2;
         //old data

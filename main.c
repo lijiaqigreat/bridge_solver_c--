@@ -17,7 +17,7 @@ int test5();
 int test6();
 #define eprintf(...) printf(__VA_ARGS__)
 int main(){
-    test3();
+    test5();
     return 0;
 }
 
@@ -141,44 +141,51 @@ int test5(){
         printf("no bridge!!\n");
         return 1;
     }
-    Manager *manager=manager_init(NULL,f,32,16,0.5);
+    Manager *manager=manager_init(NULL,f,128,16,0.5);
 
     analyze(&result,&task,f,&f->typeHint);
     result_print(&result,f,manager->min);
 
     int ttt=0;
-    for(ttt=0;ttt<5;ttt++){
+    for(ttt=0;ttt<1;ttt++){
         main_work(manager);
         printf("queue size: %d\n",manager->queue->size3_);
+        printf("table size: %d\n",manager->table->size2_);
         analyze(&result,&task,f,manager->min);
         result_print(&result,f,manager->min);
+        analyze(&result,&task,f,manager->queue->data[0]);
+        result_print(&result,f,manager->queue->data[0]);
     }
 
     printf("double check!\n");
 
-
+    /*
+    //manual
     int freeJointSize=manager->bridge->totalJointSize-manager->bridge->fixedJointSize;
     int hintSize=TYPE_HINT_COST_SIZE(manager->bridge->memberSize);
-    gpointer queueTask=g_malloc(freeJointSize+hintSize);
+    Byte *queueTask=g_malloc(freeJointSize+hintSize);
     //set typeHint
     memcpy(queueTask,&f->typeHint,hintSize);
     //set positionHint
     memset(queueTask+hintSize,0,freeJointSize);
+    *(queueTask+hintSize)=(Byte)15;
+    *(queueTask+hintSize+4)=(Byte)15;
 
     update_task(&result,&task,queueTask,queueTask,manager,hintSize);
 
-    analyze(&result,&task,f,manager->min);
-    result_print(&result,f,manager->min);
+    analyze(&result,&task,f,queueTask);
+    result_print(&result,f,queueTask);
+    */
 
     const BridgeInfo* f2=rebaseBridge(f,manager->min);
     saveBridge("Eg/2014/test/test3.bdc",f2);
 
 
+    printf("finished!\n");
     free(queueTask);
     free(f);
     free(f2);
 
-    printf("finished!\n");
     return 0;
 
 }
@@ -194,6 +201,6 @@ int test6(){
     const BridgeInfo* f2=rebaseBridge(f,queueTask);
     printf("new bridge:\n%s\n",f2->buf);
 
-    saveBridge("Eg/2014/test/test2.bdc",f2);
+    saveBridge("Eg/2014/test/test3.bdc",f2);
     return 0;
 }
