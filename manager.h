@@ -12,6 +12,8 @@ typedef struct _Manager{
     struct _CostTable *table;
     gpointer min;
     const struct _BridgeInfo *bridge;
+    void (*recordCallback)(struct _Manager *manager);
+    gpointer recordCallbackData;
 } Manager;
 
 Manager *manager_init(Manager *manager,const struct _BridgeInfo *bridge,int queueSize2,int queueSize3,float tableLimit);
@@ -35,6 +37,8 @@ void update_task(struct _Result *result,OptimizeTask *otask,gpointer task,gpoint
  * main thread function
  */
 void main_work(Manager *manager);
+
+void default_callback(Manager *manager);
 
 
 

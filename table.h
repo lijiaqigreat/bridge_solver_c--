@@ -43,7 +43,7 @@ int table_hash(gconstpointer element,int size1,int size2);
 
 void table_free(CostTable *table);
 
-void table_print(CostTable *table);
+void table_print(GLogLevelFlags flags,CostTable *table);
 
 
 

@@ -54,7 +54,7 @@ Dollar _table_insert(CostTable *table,gconstpointer element,Dollar cost);
 Dollar table_insert(CostTable *table,gconstpointer element,Dollar cost){
     //expand?
     if(table->size2*table->limit<table->size2_+1){
-        printf("table split: %d\n",table->size2);
+        g_message("table split: %d",table->size2);
         int size1=table->size1;
         int size2=table->size2;
         //old data
@@ -118,18 +118,18 @@ void table_free(CostTable *table){
     free(table);
 }
 
-void table_print(CostTable *table){
-    printf("--- table ---\n");
-    printf("%4d|%4d|%4d|%1.2f\n",table->size1,table->size2,table->size2_,table->limit);
+void table_print(GLogLevelFlags flags, CostTable *table){
+    g_log(G_LOG_DOMAIN,flags,"--- table ---");
+    g_log(G_LOG_DOMAIN,flags,"%4d|%4d|%4d|%1.2f",table->size1,table->size2,table->size2_,table->limit);
     //print all key-value pairs
     int t;
     gpointer data=table->data;
     int size1=table->size1;
     for(t=0;t<table->size2;t++){
         if(GET_VALUE(data)!=EMPTY_VALUE){
-            printf("%s:%5.2f\n",print_bytes(data,table->size1),GET_VALUE(data));
+            g_log(G_LOG_DOMAIN,flags,"%s:%5.2f",print_bytes(data,table->size1),GET_VALUE(data));
         }
         data+=size1+sizeof(Dollar);
     }
-    printf("--- end table ---\n");
+    g_log(G_LOG_DOMAIN,flags,"--- end table ---");
 }

@@ -13,13 +13,13 @@ const gchar* log_get_flag(GLogLevelFlags flag){
     return buf;
 }
 
-void log_func_stdout(const gchar *log_domain,GLogLevelFlags log_level,const gchar *message,gpointer user_data){
-    puts(message);
-}
-void log_func_stderr(const gchar *log_domain,GLogLevelFlags log_level,const gchar *message,gpointer user_data){
-    fprintf(stderr,"%s",message);
+void log_func_FILE(const gchar *log_domain,GLogLevelFlags log_level,const gchar *message,gpointer user_data){
+    fputs(log_get_flag(log_level),user_data);
+    fputs(message,user_data);
+    fputs("\n",user_data);
 }
 void log_func_iochannel(const gchar *log_domain,GLogLevelFlags log_level,const gchar *message,gpointer user_data){
     g_io_channel_write_chars(user_data,log_get_flag(log_level),-1,NULL,NULL);
     g_io_channel_write_chars(user_data,message,-1,NULL,NULL);
+    g_io_channel_write_chars(user_data,"\n",-1,NULL,NULL);
 }

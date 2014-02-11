@@ -21,6 +21,8 @@ Manager *manager_init(Manager *f,const BridgeInfo *bridge,int queueSize2,int que
 
     f->queue=queue_init(NULL,queueSize1,queueSize2,queueSize3);
     f->table=table_init(NULL,freeJointSize,TABLE_SIZE,tableLimit);
+    f->recordCallback=default_callback;
+    f->recordCallbackData=NULL;
 
     //the only task in the queue
     gpointer task=g_malloc(queueSize1);
@@ -32,9 +34,7 @@ Manager *manager_init(Manager *f,const BridgeInfo *bridge,int queueSize2,int que
     memset(task+hintSize,0,freeJointSize);
     Result result;
     OptimizeTask otask;
-    printf("initializing manager\n");
     update_task(&result,&otask,task,task,f,hintSize);
-    printf("initialized manager\n");
 
     return f;
 }
@@ -51,12 +51,8 @@ int manager_update(Manager *manager,gconstpointer task){
     //update record
     if(value<GET_DOLLAR(manager->min)){
         memcpy(manager->min,task,hintSize+freeJointSize);
-        printf("new record! %lf\n",value);
-    }
-    static counter=0;
-    counter++;
-    if(counter%10000==0){
-        printf("done %10.4lf,%10.4f\n",value,g_timer_elapsed(timer,NULL));
+        g_message("new record! %lf",value);
+        manager->recordCallback(manager);
     }
     //update table
     value=table_insert(manager->table,task+hintSize,value);
@@ -99,15 +95,13 @@ void update_task(Result *result,OptimizeTask *otask,gpointer task,gpointer tmp1,
     if(value==EMPTY_VALUE){
         memcpy(tmp1,task,hintSize);
         int n=analyze(result,otask,manager->bridge,tmp1);
-        //printf("test n:%d\n",n);
         n=optimize(tmp1, otask);
-        //printf("test n:%d\n",n);
         manager_update(manager,tmp1);
         //queue_insert(manager->queue,tmp);
     }
 }
 void main_work(Manager *manager){
-    printf("start work\n");
+    g_message("starting main work");
     int freeJointSize=manager->bridge->totalJointSize-manager->bridge->fixedJointSize;
     int hintSize=TYPE_HINT_COST_SIZE(manager->bridge->memberSize);
 
@@ -152,7 +146,7 @@ void main_work(Manager *manager){
     free(tmp1);
     free(queueTask_);
     free(result);
-    printf("end work\n");
+    g_message("finishing main work");
 }
 
 //TODO move to different place
@@ -166,3 +160,9 @@ char* print_bytes(gconstpointer p,int size){
     return buf;
 }
 
+void default_callback(Manager *manager){
+    Result result;
+    OptimizeTask task;
+    analyze(&result,&task,manager->bridge,manager->min);
+    result_print(G_LOG_LEVEL_MESSAGE,&result,manager->bridge,manager->min);
+}

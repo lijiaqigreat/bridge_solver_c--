@@ -135,19 +135,20 @@ void queue_free(TaskQueue *queue){
     free(queue->data);
     free(queue);
 }
-void queue_print(TaskQueue *queue){
-    printf("--- queue ---\n");
-    printf("%4d|%4d|%4d|%4d\n",queue->size1,queue->size2,queue->size3,queue->size3_);
+void queue_print(GLogLevelFlags flags, TaskQueue *queue){
+    
+    g_log(G_LOG_DOMAIN,flags,"--- queue ---");
+    g_log(G_LOG_DOMAIN,flags,"%4d|%4d|%4d|%4d",queue->size1,queue->size2,queue->size3,queue->size3_);
     int t;
     for(t=0;t<queue->size3_;t++){
         Double a=queue->interval[t];
         int size=queue->dataSize[t];
         
-        printf("block:%3d, size:%5d, interval: %5.3lf\n",t,size,a);
+        g_log(G_LOG_DOMAIN,flags,"block:%3d, size:%5d, interval: %5.3lf",t,size,a);
         int t2;
         for(t2=0;t2<size;t2++){
-            printf("%10.3lf:%s\n",GET_DOLLAR(queue->data[t]+queue->size1*t2),print_bytes(queue->data[t]+queue->size1*t2+sizeof(Dollar),queue->size1-sizeof(Dollar)));
+            g_log(G_LOG_DOMAIN,flags,"%10.3lf:%s",GET_DOLLAR(queue->data[t]+queue->size1*t2),print_bytes(queue->data[t]+queue->size1*t2+sizeof(Dollar),queue->size1-sizeof(Dollar)));
         }
     }
-    printf("--- end queue ---\n");
+    g_log(G_LOG_DOMAIN,flags,"--- end queue ---");
 }

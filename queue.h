@@ -70,6 +70,6 @@ gpointer queue_pull(TaskQueue *queue);
 
 void queue_free(TaskQueue *queue);
 
-void queue_print(TaskQueue *queue);
+void queue_print(GLogLevelFlags flags, TaskQueue *queue);
 
 #endif
