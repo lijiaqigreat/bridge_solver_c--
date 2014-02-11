@@ -16,6 +16,7 @@ static gchar *type_path="type_data";
 static gint block_size=16;
 static gint queue_size=16;
 static gdouble load_factor=0.75;
+static gint iteration_size=50;
 static GOptionEntry entries2[] =
 {
     {"file", 'f',0,G_OPTION_ARG_FILENAME,&input_path,"path of input bridge", "PATH"},
@@ -25,6 +26,7 @@ static GOptionEntry entries2[] =
     {"block-size",'b',0,G_OPTION_ARG_INT,&block_size,"max number of tasks a worker pulls each time, N>=2","N"},
     {"queue-size",'q',0,G_OPTION_ARG_INT,&queue_size,"max number of blocks the program keeps track of, N>=2","N"},
     {"table-loadfactor",'l',0,G_OPTION_ARG_DOUBLE,&load_factor,"load factor of look up table","N"},
+    {"iteration",'i',0,G_OPTION_ARG_INT,&iteration_size,"number of iterations the program tries to optimize, default and recommended value: 50, N>=1","N"},
     {NULL}
 };
 int test1();
@@ -121,7 +123,7 @@ int test5(){
     result_print(G_LOG_LEVEL_MESSAGE,&result,f,manager->min);
 
     int ttt=0;
-    for(ttt=0;ttt<50;ttt++){
+    for(ttt=0;ttt<iteration_size;ttt++){
         main_work(manager);
         g_message("queue size: %d",manager->queue->size3_);
         g_message("table size: %d",manager->table->size2_);
