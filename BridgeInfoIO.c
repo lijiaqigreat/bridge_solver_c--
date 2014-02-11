@@ -2,48 +2,39 @@
 #include "BridgeInfoIO.h"
 #include "rc4.h"
 #include <string.h>
-#include <glib/giochannel.h>
 
 guchar* readFile(const gchar* path,Bool encrypt){
-    GIOChannel *ch=g_io_channel_new_file(path,"r",NULL);
-    g_io_channel_set_encoding(ch,NULL,NULL);
-    if (!ch) {
-        fprintf(stderr, "ERROR: can't open input file: %s\n",path);
-        return 0;
-    }
+    GError* error=NULL;
     guchar *buf=NULL;
     gsize size;
-    g_io_channel_read_to_end(ch,(gchar**)&buf,&size,0);
+    g_file_get_contents(path,&buf,&size,&error);
+    if (error) {
+        g_critical("ERROR: %s\n",error->message);
+        g_error_free(error);
+        return 0;
+    }
     if(encrypt){
         endecrypt_rc4(buf,(int)size);
     }
-    g_io_channel_unref(ch);
     return buf;
 }
 int writeFile(const gchar* path, const guchar* buf,Bool encrypt){
-    GIOChannel *ch=g_io_channel_new_file(path,"w",NULL);
-    g_io_channel_set_encoding(ch,NULL,NULL);
-    if (!ch) {
-        fprintf(stderr, "can't write to file: %s\n",path);
-        return 1;
-    }
     //TODO better performance by storing length somewhere?
-    GError *error=NULL;
     gsize size=strlen(buf);
+    GError *error=NULL;
     if(encrypt){
-        guchar *buf2=strndup(buf,size);
-        endecrypt_rc4(buf2,(int)size);
-        g_io_channel_write_chars(ch,buf2,size,NULL,&error);
-        free(buf2);
+        buf=strndup(buf,size);
+        endecrypt_rc4(buf,(int)size);
+        g_file_set_contents(path,buf,size,error);
+        free(buf);
     }else{
-        g_io_channel_write_chars(ch,buf,size,NULL,&error);
+        g_file_set_contents(path,buf,size,error);
     }
     if(error!=NULL){
-        fprintf(stderr, "ERROR: %s\n",error->message);
+        g_critical("ERROR: %s\n",error->message);
         g_error_free(error);
         return 2;
     }
-    g_io_channel_unref(ch);
     return 0;
 }
 
