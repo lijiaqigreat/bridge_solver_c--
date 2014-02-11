@@ -51,6 +51,9 @@ typedef struct _TaskQueue{
  */
 Double quickselect(gpointer block,gpointer tmp,int size,gint32 b,gint32 c);
 
+/**
+ * 
+ */
 TaskQueue *queue_init(TaskQueue *f,int size1,int size2,int size3);
 
 /**

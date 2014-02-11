@@ -8,6 +8,7 @@
 #include "manager.h"
 #include "queue.h"
 #include "table.h"
+#include "log.h"
 typedef __uint128_t BigInt;
 int test1();
 int test2();
@@ -17,7 +18,11 @@ int test5();
 int test6();
 #define eprintf(...) printf(__VA_ARGS__)
 int main(){
-    test5();
+    GIOChannel *ch=g_io_channel_new_file("LOG","w",NULL);
+    g_log_set_handler(G_LOG_DOMAIN,G_LOG_LEVEL_MASK,&log_func_iochannel,ch);
+    //test5();
+    g_warning("test warning %d\n",1);
+    g_io_channel_unref(ch);
     return 0;
 }
 
@@ -175,6 +180,7 @@ int test5(){
 
     analyze(&result,&task,f,queueTask);
     result_print(&result,f,queueTask);
+    free(queueTask);
     */
 
     const BridgeInfo* f2=rebaseBridge(f,manager->min);
@@ -182,7 +188,6 @@ int test5(){
 
 
     printf("finished!\n");
-    free(queueTask);
     free(f);
     free(f2);
 

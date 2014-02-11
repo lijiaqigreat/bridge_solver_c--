@@ -3,7 +3,7 @@ CFLAGS=-c -g -pg -Wall -O0 `pkg-config --cflags glib-2.0`
 LIBS=-L/usr/lib -lm -lglib-2.0
 
 all: bridge_solver
-bridge_solver: main.o rc4.o analyzer.o optimizer.o BridgeInfoIO.o Result.o type.o manager.o table.o queue.o
+bridge_solver: main.o rc4.o analyzer.o optimizer.o BridgeInfoIO.o Result.o type.o manager.o table.o queue.o log.o
 	$(CC) -g -pg *.o -o bridge_solver $(LIBS) 
 main.o: main.c
 	$(CC) $(CFLAGS) main.c -o main.o
@@ -25,6 +25,9 @@ table.o: table.c
 	$(CC) $(CFLAGS) table.c -o table.o
 queue.o: queue.c
 	$(CC) $(CFLAGS) queue.c -o queue.o
+log.o: log.c
+	$(CC) $(CFLAGS) log.c -o log.o
+	
 
 clean:
 	rm *.o

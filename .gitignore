@@ -1,15 +1,17 @@
-*.out
-*.png
-*.jpg
-*.gif
-*.html
-*.properties
-*.class
+# special files
+LOG
+quickfix
+bridge_solver
 wpbd_src/
+
+# executable
+*.out
+
 # Compiled Object files
 *.slo
 *.lo
 *.o
+# swaps
 .*.swp
 .*.*.swp
 
