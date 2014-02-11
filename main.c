@@ -12,6 +12,7 @@
 static gchar *input_path="Eg/2014/test3.bdc";
 static gchar *output_path="Eg/2014/test/test3.bdc";
 static gchar *log_path="LOG";
+static gchar *type_path="type_data";
 static gint block_size=16;
 static gint queue_size=16;
 static gdouble load_factor=0.75;
@@ -20,6 +21,7 @@ static GOptionEntry entries2[] =
     {"file", 'f',0,G_OPTION_ARG_FILENAME,&input_path,"path of input bridge", "PATH"},
     {"output",'o',0,G_OPTION_ARG_FILENAME,&output_path,"path of output bridge","PATH"},
     {"log",'d',0,G_OPTION_ARG_FILENAME,&log_path,"path of log file to write","PATH"},
+    {"type-data",'t',0,G_OPTION_ARG_FILENAME,&type_path,"path of type file to reference","PATH"},
     {"block-size",'b',0,G_OPTION_ARG_INT,&block_size,"max number of tasks a worker pulls each time, N>=2","N"},
     {"queue-size",'q',0,G_OPTION_ARG_INT,&queue_size,"max number of blocks the program keeps track of, N>=2","N"},
     {"table-loadfactor",'l',0,G_OPTION_ARG_DOUBLE,&load_factor,"load factor of look up table","N"},
@@ -106,7 +108,7 @@ int test4(){
     return 0;
 }
 int test5(){
-    const BridgeInfo* f=loadBridge(input_path);
+    const BridgeInfo* f=loadBridge(input_path,type_path);
     Result result;
     OptimizeTask task;
     if(f==NULL){
@@ -135,19 +137,4 @@ int test5(){
 
     return 0;
 
-}
-int test6(){
-    const BridgeInfo* f=loadBridge("Eg/2014/test2.bdc");
-    int freeJointSize=f->totalJointSize-f->fixedJointSize;
-    int hintSize=TYPE_HINT_COST_SIZE(f->memberSize);
-    gpointer queueTask=g_malloc(freeJointSize+hintSize);
-    //set typeHint
-    memcpy(queueTask,&f->typeHint,hintSize);
-    //set positionHint
-    memset(queueTask+hintSize,0,freeJointSize);
-    const BridgeInfo* f2=rebaseBridge(f,queueTask);
-    printf("new bridge:\n%s\n",f2->buf);
-
-    saveBridge("Eg/2014/test/test3.bdc",f2);
-    return 0;
 }

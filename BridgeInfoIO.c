@@ -56,7 +56,7 @@ int findIndex(const TypeB *types,int index){
     }
     return -1;
 }
-const BridgeInfo* loadBridge(const gchar* path){
+const BridgeInfo* loadBridge(const gchar* path,const gchar* type_path){
     /* encrypt buffer */
     BridgeInfo* f=(BridgeInfo*) malloc(sizeof(BridgeInfo));
     gchar* buf=(gchar*) readFile(path,TRUE);
@@ -78,7 +78,7 @@ const BridgeInfo* loadBridge(const gchar* path){
         code[9-t]=conditionID%10;
         conditionID/=10;
     }
-    char* buf2=(char*) readFile(TYPE_PATH,FALSE);
+    char* buf2=(char*) readFile(type_path,FALSE);
     setupTypes((TypeB*)(&f->types[0]),buf2);
     f->totalJointSize=jointSize;
     f->memberSize=memberSize;

@@ -13,7 +13,7 @@
 #define BUF_LEN_MEMBER 8
 
 
-const BridgeInfo* loadBridge(const char* path);
+const BridgeInfo* loadBridge(const char* path,const char* type_path);
 
 void saveBridge(const char* path,const BridgeInfo* bridge);
 
