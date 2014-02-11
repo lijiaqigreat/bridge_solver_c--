@@ -251,8 +251,8 @@ const BridgeInfo* rebaseBridge(const BridgeInfo* bridgeInfo,gpointer thc_ph){
     int t1;
     for(t1=f->fixedJointSize;t1<f->totalJointSize;++t1){
         int t2=t1-f->fixedJointSize;
-        f->positionHint.xy[t1*2  ]+=(((position->joints[t2]>>4)&15)^8-8);
-        f->positionHint.xy[t1*2+1]+=(((position->joints[t2]   )&15)^8-8);
+        f->positionHint.xy[t1*2  ]+=((((position->joints[t2]>>4)&15)^8)-8);
+        f->positionHint.xy[t1*2+1]+=((((position->joints[t2]   )&15)^8)-8);
         sprintf(buf2,"%3d%3d",f->positionHint.xy[t1*2  ],f->positionHint.xy[t1*2+1]);
         buf2+=BUF_LEN_JOINT;
     }

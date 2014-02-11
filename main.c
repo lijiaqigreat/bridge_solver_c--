@@ -121,7 +121,7 @@ int test5(){
     result_print(G_LOG_LEVEL_MESSAGE,&result,f,manager->min);
 
     int ttt=0;
-    for(ttt=0;ttt<10;ttt++){
+    for(ttt=0;ttt<50;ttt++){
         main_work(manager);
         g_message("queue size: %d",manager->queue->size3_);
         g_message("table size: %d",manager->table->size2_);
@@ -136,5 +136,27 @@ int test5(){
     free(f2);
 
     return 0;
+}
+int test6(){
+    const BridgeInfo* f=loadBridge(input_path,type_path);
+    if(f==NULL){
+        g_critical("no bridge!!");
+        return 1;
+    }
+    int freeJointSize=f->totalJointSize-f->fixedJointSize;
+    int hintSize=TYPE_HINT_COST_SIZE(f->memberSize);
+    Result result;
+    OptimizeTask otask;
 
+    //the only task in the queue
+    gpointer task=g_malloc(hintSize+freeJointSize);
+    //set typeHint
+    memcpy(task,&f->typeHint,hintSize);
+    //set positionHint
+    memset(task+hintSize,0,freeJointSize);
+
+    analyze(&result,&otask,f,&f->typeHint);
+    result_print(G_LOG_LEVEL_MESSAGE,&result,f,task);
+    free(task);
+    free(f);
 }
