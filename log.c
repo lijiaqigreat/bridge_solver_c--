@@ -23,3 +23,11 @@ void log_func_iochannel(const gchar *log_domain,GLogLevelFlags log_level,const g
     g_io_channel_write_chars(user_data,message,-1,NULL,NULL);
     g_io_channel_write_chars(user_data,"\n",-1,NULL,NULL);
 }
+void log_func_multiple(const gchar *log_domain,GLogLevelFlags log_level,const gchar *message,gpointer user_data){
+    gpointer* data=(gpointer*) user_data;
+    while(data[0]!=NULL){
+        (*((GLogFunc*)data))(log_domain,log_level,message,data[1]);
+        data+=2;
+    }
+
+}

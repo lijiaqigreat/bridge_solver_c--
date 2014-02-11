@@ -9,20 +9,54 @@
 #include "queue.h"
 #include "table.h"
 #include "log.h"
-typedef __uint128_t BigInt;
+static gchar *input_path="Eg/2014/test3.bdc";
+static gchar *output_path="Eg/2014/test/test3.bdc";
+static gchar *log_path="LOG";
+static gint block_size=16;
+static gint queue_size=16;
+static gdouble load_factor=0.75;
+static GOptionEntry entries2[] =
+{
+    {"file", 'f',0,G_OPTION_ARG_FILENAME,&input_path,"path of input bridge", "PATH"},
+    {"output",'o',0,G_OPTION_ARG_FILENAME,&output_path,"path of output bridge","PATH"},
+    {"log",'d',0,G_OPTION_ARG_FILENAME,&log_path,"path of log file to write","PATH"},
+    {"block-size",'b',0,G_OPTION_ARG_INT,&block_size,"max number of tasks a worker pulls each time, N>=2","N"},
+    {"queue-size",'q',0,G_OPTION_ARG_INT,&queue_size,"max number of blocks the program keeps track of, N>=2","N"},
+    {"table-loadfactor",'l',0,G_OPTION_ARG_DOUBLE,&load_factor,"load factor of look up table","N"},
+    {NULL}
+};
 int test1();
 int test2();
 int test3();
 int test4();
 int test5();
 int test6();
-#define eprintf(...) printf(__VA_ARGS__)
-int main(){
-    GIOChannel *ch=g_io_channel_new_file("LOG","w",NULL);
-    //g_log_set_handler(G_LOG_DOMAIN,G_LOG_LEVEL_MASK,&log_func_iochannel,ch);
-    g_log_set_handler(G_LOG_DOMAIN,G_LOG_LEVEL_MASK,&log_func_FILE,stdout);
+int main (int argc, char *argv[]){
+    GError *error = NULL;
+    GOptionContext *context;
+
+    context = g_option_context_new ("- solver for Westpoint Bridge Design 2014");
+    g_option_context_add_main_entries (context, entries2, NULL);
+    if (!g_option_context_parse (context, &argc, &argv, &error))
+    {
+        g_print ("option parsing failed: %s\n", error->message);
+        exit (1);
+    }
+    printf("input: %s\n",input_path);
+
+    GIOChannel *ch=g_io_channel_new_file(log_path,"w",NULL);
+    gpointer* data=g_new(gpointer,5);
+    data[0]=&log_func_iochannel;
+    data[1]=ch;
+    data[2]=&log_func_FILE;
+    data[3]=stdout;
+    data[4]=NULL;
+    //g_log_set_handler(G_LOG_DOMAIN,G_LOG_LEVEL_MESSAGE,&log_func_iochannel,ch);
+    //g_log_set_handler(G_LOG_DOMAIN,G_LOG_LEVEL_MASK,&log_func_FILE,stdout);
+    g_log_set_handler(G_LOG_DOMAIN,G_LOG_LEVEL_MASK,&log_func_multiple,data);
     test5();
     g_io_channel_unref(ch);
+    free(data);
     return 0;
 }
 
@@ -72,27 +106,27 @@ int test4(){
     return 0;
 }
 int test5(){
-    const BridgeInfo* f=loadBridge("Eg/2014/test3.bdc");
+    const BridgeInfo* f=loadBridge(input_path);
     Result result;
     OptimizeTask task;
     if(f==NULL){
         g_critical("no bridge!!");
         return 1;
     }
-    Manager *manager=manager_init(NULL,f,128,16,0.5);
+    Manager *manager=manager_init(NULL,f,block_size,queue_size,load_factor);
 
     analyze(&result,&task,f,&f->typeHint);
     result_print(G_LOG_LEVEL_MESSAGE,&result,f,manager->min);
 
     int ttt=0;
-    for(ttt=0;ttt<100;ttt++){
+    for(ttt=0;ttt<10;ttt++){
         main_work(manager);
         g_message("queue size: %d",manager->queue->size3_);
         g_message("table size: %d",manager->table->size2_);
     }
 
     const BridgeInfo* f2=rebaseBridge(f,manager->min);
-    saveBridge("Eg/2014/test/test3.bdc",f2);
+    saveBridge(output_path,f2);
 
 
     g_message("program finished!");
