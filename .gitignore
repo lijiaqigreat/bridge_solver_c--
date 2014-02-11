@@ -5,7 +5,7 @@ bridge_solver
 wpbd_src/
 
 # debug file
-Eg/2014/test/
+Eg/2014/test/*
 *.gprof
 
 # executable

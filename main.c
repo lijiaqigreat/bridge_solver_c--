@@ -19,13 +19,13 @@ static gdouble load_factor=0.75;
 static gint iteration_size=50;
 static GOptionEntry entries2[] =
 {
-    {"file", 'f',0,G_OPTION_ARG_FILENAME,&input_path,"path of input bridge", "PATH"},
-    {"output",'o',0,G_OPTION_ARG_FILENAME,&output_path,"path of output bridge","PATH"},
-    {"log",'d',0,G_OPTION_ARG_FILENAME,&log_path,"path of log file to write","PATH"},
-    {"type-data",'t',0,G_OPTION_ARG_FILENAME,&type_path,"path of type file to reference","PATH"},
-    {"block-size",'b',0,G_OPTION_ARG_INT,&block_size,"max number of tasks a worker pulls each time, N>=2","N"},
-    {"queue-size",'q',0,G_OPTION_ARG_INT,&queue_size,"max number of blocks the program keeps track of, N>=2","N"},
-    {"table-loadfactor",'l',0,G_OPTION_ARG_DOUBLE,&load_factor,"load factor of look up table","N"},
+    {"file", 'f',0,G_OPTION_ARG_FILENAME,&input_path,"path of input bridge, default: Eg/2014/test3.bdc", "PATH"},
+    {"output",'o',0,G_OPTION_ARG_FILENAME,&output_path,"path of output bridge, default: Eg/2014/test/test3.bdc","PATH"},
+    {"log",'d',0,G_OPTION_ARG_FILENAME,&log_path,"path of log file to write, default: LOG","PATH"},
+    {"type-data",'t',0,G_OPTION_ARG_FILENAME,&type_path,"path of type file to reference, default: type_data","PATH"},
+    {"block-size",'b',0,G_OPTION_ARG_INT,&block_size,"max number of tasks a worker pulls each time, default: 16, N>=2","N"},
+    {"queue-size",'q',0,G_OPTION_ARG_INT,&queue_size,"max number of blocks the program keeps track of, default: 16, N>=2","N"},
+    {"table-loadfactor",'l',0,G_OPTION_ARG_DOUBLE,&load_factor,"load factor of look up table, default: 0.75","N"},
     {"iteration",'i',0,G_OPTION_ARG_INT,&iteration_size,"number of iterations the program tries to optimize, default and recommended value: 50, N>=1","N"},
     {NULL}
 };
