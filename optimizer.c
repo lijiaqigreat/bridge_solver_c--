@@ -53,8 +53,8 @@ int optimize(TypeHintCostB* f,const OptimizeTask* task){
     
    
     int level=0;
-    int count[7];
-    for(t=0;t<7;t++){
+    int count[8];
+    for(t=0;t<8;t++){
         count[t]=0;
     }
     while(level>-1){
@@ -80,10 +80,6 @@ int optimize(TypeHintCostB* f,const OptimizeTask* task){
             continue;
         }
         count[0]++;
-        if(count[0]>=200000){
-            f->cost=task->capCost;
-            break;
-        }
         bundleLength[level]=bundleLength[level-1];
         bundleCost[level]=bundleCost[level-1]+task->bundleCost;
         bundleMinCost[level]=bundleMinCost[level-1];
@@ -105,6 +101,14 @@ int optimize(TypeHintCostB* f,const OptimizeTask* task){
             count[2]++;
             --level;
             continue;
+        }
+        valid=task->typeTestMask[bundle[level]];
+        for(t=level-1;t>0;t--){
+            if((valid|(bundleRemain[t]^bundleRemain[t-1]))==valid&&(bundleLength[t-1]-bundleLength[t])*(task->cost[bundle[level]]-task->cost[bundle[t]])<task->bundleCost){
+                count[7]++;
+                --level;
+                continue;
+            }
         }
 
         //finished?
@@ -139,6 +143,8 @@ int optimize(TypeHintCostB* f,const OptimizeTask* task){
             continue;
         }
     }
-    //printf("optimizer: %d\n",count[0]);
+    for(t=0;t<8;t++){
+        g_debug("count %d %d",t,count[t]);
+    }
     return 0;
 }
