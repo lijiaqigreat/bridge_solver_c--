@@ -35,7 +35,9 @@
 #define INVALID_VALUE 10000000.
 
 //quick hands
-#define FFSLL __builtin_ffsll
+#define _FFSLL __builtin_ffsll
+//TODO mask can't be 0
+#define FFSLLL(mask) (_FFSLL(mask)==0?_FFSLL((mask>>64))+64:_FFSLL(mask))
 #define GET_BYTE(p) (*(const guchar*)(p))
 #define GET_DOLLAR(p) (*(Dollar*)(p))
 #define SQR(a) ((a)*(a))

@@ -4,6 +4,8 @@
 
 static char spacebuf[]="          ";
 int optimize(TypeHintCostB* f,const OptimizeTask* task){
+    int memberSize=task->memberSize;
+    int typeSize=task->typeSize;
     //used as final return
     //index of type with minCost for given member
     Byte memberMinIndex[MAX_MEMBER];
@@ -25,14 +27,14 @@ int optimize(TypeHintCostB* f,const OptimizeTask* task){
     //update bundleLength[0]
     bundleLength[0]=0;
     int t;
-    for(t=0;t<task->memberSize;++t){
+    for(t=0;t<memberSize;++t){
      bundleLength[0]+=task->length[t];
     }
    
     //update memberMinIndex, bundleMinCost[0]
     bundleMinCost[0]=0;
-    bundleRemain[0]=(TestMask)(1L<<task->memberSize)-1;
-    for(t=0;t<task->typeSize;++t){
+    bundleRemain[0]=(((TestMask)1)<<memberSize)-1;
+    for(t=0;t<typeSize;++t){
         TestMask valid=bundleRemain[0]&task->typeTestMask[t];
         bundleRemain[0]^=valid;
         int tmp=0;
@@ -46,7 +48,7 @@ int optimize(TypeHintCostB* f,const OptimizeTask* task){
         }
     }
    
-    bundleRemain[0]=(TestMask)(1L<<task->memberSize)-1;
+    bundleRemain[0]=(((TestMask)1)<<memberSize)-1;
     bundleCost[0]=0;
     bundle[0]=0;
     bundle[1]=0;
@@ -66,7 +68,7 @@ int optimize(TypeHintCostB* f,const OptimizeTask* task){
         }
 
         //tested all types
-        if(bundle[level+1]==task->typeSize-1){
+        if(bundle[level+1]==typeSize-1){
             count[5]++;
             --level;
             continue;
@@ -89,11 +91,12 @@ int optimize(TypeHintCostB* f,const OptimizeTask* task){
         }
         //TODO optimize performance, take advantage of bitset.
         while(valid!=0){
-            int tt=FFSLL(valid)-1;
+            //TODO
+            int tt=FFSLLL(valid)-1;
             bundleLength[level] -= task->length[tt];
             bundleCost[level] +=task->cost[bundle[level]]*task->length[tt];
             bundleMinCost[level]-=task->cost[memberMinIndex[tt]]*task->length[tt];
-            valid^=1L<<tt;
+            valid^=((TestMask)1)<<tt;
         }
         //eprintf("%s%d:%5lf|%5lf|%5lf|%5lf|%s",spacebuf+(10-level),level,bundleLength[level],bundleCost[level],bundleMinCost[level],print_bytes(&bundleRemain[level],8));
         //stop when cost too large
@@ -121,7 +124,7 @@ int optimize(TypeHintCostB* f,const OptimizeTask* task){
                 for(t=0;t<level;++t){
                     f->bundle[t]=task->index[bundle[t+1]];
                 }
-                for(t=0;t<task->memberSize;++t){
+                for(t=0;t<memberSize;++t){
                     TestMask tmpMask=((TestMask)(1))<<t;
                     Byte tmp=level-1;
                     while(TRUE){
